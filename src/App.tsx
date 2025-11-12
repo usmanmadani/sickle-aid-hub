@@ -10,6 +10,9 @@ import About from "./pages/About";
 import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
+import GenotypeChecker from "./pages/GenotypeChecker";
+import TestingCenters from "./pages/TestingCenters";
+import EducationalHub from "./pages/EducationalHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/programs" element={<Programs />} />
+          <Route path="/genotype-checker" element={<GenotypeChecker />} />
+          <Route path="/testing-centers" element={<TestingCenters />} />
+          <Route path="/resources" element={<EducationalHub />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donate" element={<Donate />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
