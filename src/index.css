@@ -39,11 +39,6 @@ All colors MUST be HSL.
     --ring: 1 92% 49%;
 
     --radius: 1rem;
-
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(1 92% 49%) 0%, hsl(33 56% 84%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(33 56% 94%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(33 56% 84%) 0%, hsl(0 0% 100%) 100%);
     
     /* Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(1 92% 49% / 0.1);
@@ -106,10 +101,6 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
-  }
-  
   .animate-counter {
     animation: countUp 2s ease-out forwards;
   }

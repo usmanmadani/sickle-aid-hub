@@ -1,8 +1,24 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Heart, Shield, TrendingUp } from "lucide-react";
 
 const Donate = () => {
+  const [customAmount, setCustomAmount] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setCustomAmount("");
+  };
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value);
+    setSelectedAmount(null);
+  };
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -34,13 +50,52 @@ const Donate = () => {
                 We're currently setting up a secure online donation platform to make it easier 
                 for you to support our cause.
               </p>
-              <p className="text-muted-foreground">
-                In the meantime, if you'd like to make a donation, please contact us directly 
-                and we'll provide you with alternative donation methods.
-              </p>
-              <Button variant="hero" size="lg" className="mt-4">
-                Contact Us About Donating
-              </Button>
+              <div className="space-y-6">
+                <div>
+                  <Label className="text-base mb-3 block">Select Amount</Label>
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    {[5000, 15000, 50000].map((amount) => (
+                      <Button
+                        key={amount}
+                        variant={selectedAmount === amount ? "default" : "outline"}
+                        onClick={() => handleAmountSelect(amount)}
+                        className="h-14"
+                      >
+                        ₦{amount.toLocaleString()}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="customAmount" className="text-base mb-2 block">
+                    Or Enter Custom Amount
+                  </Label>
+                  <Input
+                    id="customAmount"
+                    type="number"
+                    placeholder="Enter amount in Naira"
+                    value={customAmount}
+                    onChange={handleCustomAmountChange}
+                    className="h-14 text-lg"
+                    min="0"
+                  />
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  Payment integration coming soon. In the meantime, please contact us directly 
+                  for donation methods.
+                </p>
+
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={!selectedAmount && !customAmount}
+                >
+                  Continue to Payment
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

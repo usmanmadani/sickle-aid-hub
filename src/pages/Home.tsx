@@ -10,18 +10,11 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-background">
+      <section className="relative min-h-screen pt-32 pb-20 flex items-center justify-center overflow-hidden bg-background">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <motion.div 
-          className="absolute top-20 right-20 w-20 h-20 opacity-20"
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Heart className="w-full h-full text-primary" fill="currentColor" />
-        </motion.div>
         
         <div className="relative container mx-auto px-4 z-10">
           <div className="max-w-3xl">
@@ -31,7 +24,7 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              Bringing <span className="text-gradient">Hope</span> to Those Affected by Sickle Cell
+              Bringing <span className="text-primary">Hope</span> to Those Affected by Sickle Cell
             </motion.h1>
             <motion.p 
               className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed"
@@ -61,7 +54,7 @@ const Home = () => {
       </section>
 
       {/* Impact Stats Section */}
-      <section className="py-20 bg-gradient-to-b from-secondary/20 to-background">
+      <section className="py-20 bg-background border-t border-border">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-12"
@@ -70,17 +63,17 @@ const Home = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Impact</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Together, we're making a difference in the lives of those affected by sickle cell disease.
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary">NATIONAL EMERGENCY!</h2>
+            <p className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+              Nigeria is the Sickle Cell Disorder Capital of the World!
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {[
-              { icon: Users, count: 15000, label: "Communities Reached", color: "primary" },
-              { icon: Heart, count: 8500, label: "Tests Conducted", color: "accent" },
-              { icon: Award, count: 50, label: "Awareness Programs", color: "primary" }
+              { icon: Heart, count: 100000, label: "Annual SCD Deaths Of Children Under 5 Years", color: "primary", suffix: "+" },
+              { icon: Users, count: 50000000, label: "SCD Carriers", color: "primary", suffix: "+" },
+              { icon: Award, count: 150000, label: "Annual SCD Births", color: "primary", suffix: "+" }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -99,7 +92,7 @@ const Home = () => {
                       <stat.icon className={`w-8 h-8 text-${stat.color}`} />
                     </motion.div>
                     <div className={`text-4xl font-bold text-${stat.color} mb-2`}>
-                      <StatCounter end={stat.count} suffix="+" />
+                      <StatCounter end={stat.count} suffix={stat.suffix} />
                     </div>
                     <p className="text-lg text-muted-foreground">{stat.label}</p>
                   </CardContent>
@@ -107,11 +100,26 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
+
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Card className="max-w-md mx-auto border-2 border-primary">
+              <CardContent className="pt-8 pb-8">
+                <h3 className="text-3xl font-bold text-primary mb-2">25%</h3>
+                <p className="text-lg text-foreground">of Nigerians are AS</p>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-20 bg-gradient-to-b from-background to-secondary/10">
+      <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -162,7 +170,7 @@ const Home = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-primary to-accent relative overflow-hidden">
+      <section className="py-20 bg-primary relative overflow-hidden">
         <motion.div
           className="absolute inset-0 opacity-10"
           animate={{
