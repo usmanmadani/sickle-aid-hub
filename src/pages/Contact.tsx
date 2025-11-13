@@ -117,8 +117,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Call Us</h3>
-                      <p className="text-sm text-muted-foreground">+234 XXX XXX XXXX</p>
-                      <p className="text-sm text-muted-foreground">Mon - Fri, 9AM - 5PM</p>
+                      <p className="text-sm text-muted-foreground">+234 813 085 2118</p>
                     </div>
                   </div>
                 </CardContent>
@@ -133,8 +132,7 @@ const Contact = () => {
                     <div>
                       <h3 className="font-semibold mb-1">Visit Us</h3>
                       <p className="text-sm text-muted-foreground">
-                        123 Hope Street<br />
-                        Ikeja, Lagos<br />
+                        Keffi, Nasarawa State<br />
                         Nigeria
                       </p>
                     </div>

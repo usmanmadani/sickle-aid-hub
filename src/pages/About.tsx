@@ -33,9 +33,7 @@ const About = () => {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">About Red Hope</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              We are a non-profit organization committed to eradicating the stigma around sickle 
-              cell disease and ensuring that every affected individual has access to proper care, 
-              support, and hope for a better future.
+              Red Hope Initiative is a student-led initiative founded in 2025 to reduce the burden of sickle cell disease in Nigeria by raising awareness about genotype compatibility, providing accessible testing resources, and empowering communities through education. We believe that prevention starts with knowledge, and every individual deserves the information needed to make informed decisions about their health and future.
             </p>
           </div>
         </div>
