@@ -3,11 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Heart, Shield, TrendingUp } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Donate = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
@@ -17,6 +25,55 @@ const Donate = () => {
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomAmount(e.target.value);
     setSelectedAmount(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
+    
+    if (!amount || !donorName || !donorEmail) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.from('donations').insert([
+        {
+          donor_name: donorName,
+          donor_email: donorEmail,
+          amount,
+          message,
+          payment_status: 'pending',
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thank You!",
+        description: `Your donation of ₦${amount.toLocaleString()} has been recorded. Payment processing coming soon!`,
+      });
+
+      setDonorName("");
+      setDonorEmail("");
+      setMessage("");
+      setSelectedAmount(null);
+      setCustomAmount("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,18 +139,51 @@ const Donate = () => {
                   />
                 </div>
 
-                <p className="text-sm text-muted-foreground">
-                  Payment integration coming soon. In the meantime, please contact us directly 
-                  for donation methods.
-                </p>
+                <div className="space-y-4 border-t pt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="donorName">Full Name *</Label>
+                    <Input
+                      id="donorName"
+                      value={donorName}
+                      onChange={(e) => setDonorName(e.target.value)}
+                      required
+                      placeholder="Enter your name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="donorEmail">Email *</Label>
+                    <Input
+                      id="donorEmail"
+                      type="email"
+                      value={donorEmail}
+                      onChange={(e) => setDonorEmail(e.target.value)}
+                      required
+                      placeholder="Enter your email"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message (Optional)</Label>
+                    <Textarea
+                      id="message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Leave a message of support"
+                      rows={3}
+                    />
+                  </div>
+                </div>
 
                 <Button 
+                  onClick={handleSubmit}
                   variant="default" 
                   size="lg" 
                   className="w-full"
-                  disabled={!selectedAmount && !customAmount}
+                  disabled={loading || (!selectedAmount && !customAmount)}
                 >
-                  Continue to Payment
+                  <Heart className="w-5 h-5 mr-2" />
+                  {loading ? "Processing..." : "Submit Donation"}
                 </Button>
               </div>
             </CardContent>
