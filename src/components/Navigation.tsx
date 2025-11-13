@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/red-hope-logo.jpg";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -68,9 +70,28 @@ const Navigation = () => {
                 {link.name}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
             <Button variant="hero" size="sm" asChild>
               <Link to="/donate">Donate Now</Link>
             </Button>
+            {user ? (
+              <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/auth">Login</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -118,6 +139,22 @@ const Navigation = () => {
                     </Link>
                   </motion.div>
                 ))}
+                {isAdmin && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: navLinks.length * 0.05 }}
+                  >
+                    <Link
+                      to="/admin"
+                      className="px-4 py-2 text-sm font-medium transition-colors rounded-xl block text-muted-foreground hover:text-foreground hover:bg-secondary/30 flex items-center gap-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Shield className="h-4 w-4" />
+                      Admin
+                    </Link>
+                  </motion.div>
+                )}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -129,6 +166,28 @@ const Navigation = () => {
                     </Link>
                   </Button>
                 </motion.div>
+                {user ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: (navLinks.length + 1) * 0.05 }}
+                  >
+                    <Button variant="outline" onClick={() => { signOut(); setIsOpen(false); }} className="mx-4 w-[calc(100%-2rem)] flex items-center gap-2">
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: (navLinks.length + 1) * 0.05 }}
+                  >
+                    <Button variant="outline" className="mx-4 w-[calc(100%-2rem)]" asChild>
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>Login</Link>
+                    </Button>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           )}

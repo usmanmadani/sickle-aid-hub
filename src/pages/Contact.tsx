@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100, { message: "Name must be less than 100 characters" }),
@@ -33,8 +34,10 @@ const Contact = () => {
       // Validate form data
       contactSchema.parse(formData);
 
-      // Simulate form submission (in real app, this would call an API)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Save to database
+      const { error } = await supabase.from('contacts').insert([formData]);
+
+      if (error) throw error;
 
       toast({
         title: "Message sent successfully!",
