@@ -1,27 +1,42 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Eye, Heart } from "lucide-react";
+import fayzaImg from "@/assets/fayza.jpg";
+import hauwaImg from "@/assets/hauwa.jpg";
+import israelImg from "@/assets/israel.png";
+import leoImg from "@/assets/leo.jpg";
+import aishaImg from "@/assets/aisha.jpg";
 
 const About = () => {
   const teamMembers = [
     {
-      name: "Dr. Amina Bello",
-      role: "Founder & Executive Director",
-      bio: "Hematologist with 15+ years experience in sickle cell care.",
+      name: "Fayza Madani Zanna",
+      role: "Team Lead / President",
+      bio: "Passionate in sickle cell research and care",
+      image: fayzaImg,
     },
     {
-      name: "Ibrahim Yusuf",
-      role: "Community Outreach Coordinator",
-      bio: "Passionate advocate for healthcare accessibility in rural areas.",
+      name: "Hauwa Musa Bello",
+      role: "Media and Publicity Manager",
+      bio: "Health influencer",
+      image: hauwaImg,
     },
     {
-      name: "Blessing Okafor",
-      role: "Programs Director",
-      bio: "Expert in public health education and awareness campaigns.",
+      name: "Ogusola Israel",
+      role: "Outreach and Partnership Coordinator",
+      bio: "Expert in public health education and awareness campaigns",
+      image: israelImg,
     },
     {
-      name: "Dr. Chidi Okonkwo",
-      role: "Medical Advisor",
-      bio: "Pediatric specialist focusing on sickle cell management.",
+      name: "Leonard Manther",
+      role: "Program and Logistics Officer",
+      bio: "Health influencer",
+      image: leoImg,
+    },
+    {
+      name: "Nanat Aisha Ajibade",
+      role: "Health and Research Lead",
+      bio: "Expert in research",
+      image: aishaImg,
     },
   ];
 
@@ -125,14 +140,16 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {teamMembers.map((member, index) => (
               <Card key={index} className="text-center hover:shadow-[var(--shadow-soft)] transition-all">
                 <CardContent className="pt-8 pb-8">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <span className="text-3xl font-bold text-primary-foreground">
-                      {member.name.split(" ").map(n => n[0]).join("")}
-                    </span>
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{member.name}</h3>
                   <p className="text-sm font-medium text-primary mb-3">{member.role}</p>
