@@ -1,40 +1,113 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import StatCounter from "@/components/StatCounter";
-import { Users, Heart, Award, ArrowRight } from "lucide-react";
+import { Users, Heart, Award, ArrowRight, Activity, Globe } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+
+const iconMap: any = {
+  Heart,
+  Users,
+  Award,
+  Activity,
+  Globe
+};
+
+const pageVariants = {
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 20 },
+};
 
 const Home = () => {
+  const [hero, setHero] = useState<any>(null);
+  const [mission, setMission] = useState<any>(null);
+  const [cta, setCta] = useState<any>(null);
+  const [stats, setStats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const { data: contentData } = await supabase.from('site_content').select('*');
+        const { data: statsData } = await supabase.from('impact_stats').select('*').order('order');
+
+        if (contentData) {
+          const heroContent = contentData.find(c => c.key === 'home_hero')?.value;
+          const missionContent = contentData.find(c => c.key === 'home_mission')?.value;
+          const ctaContent = contentData.find(c => c.key === 'home_cta')?.value;
+
+          setHero(heroContent);
+          setMission(missionContent);
+          setCta(ctaContent);
+        }
+
+        if (statsData) {
+          setStats(statsData);
+        }
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  // Defaults if loading or no data
+  const heroTitle = hero?.title || "Bringing Hope to Those Affected by Sickle Cell";
+  const heroSubtitle = hero?.subtitle || "We believe prevention starts with awareness. We believe patients deserve hope. ❤️";
+  const missionDesc = mission?.description || "Red Hope is dedicated to raising awareness about sickle cell disease and providing support to affected individuals and their families across Nigeria and beyond.";
+  const ctaTitle = cta?.title || "Join the Movement";
+  const ctaDesc = cta?.description || "Your support can save lives. WHETHER through donations, volunteering, or spreading awareness, every action counts.";
+
+  const defaultStats = [
+    { label: "Annual SCD Deaths Of Children Under 5 Years", count: 100000, suffix: "+", icon: "Heart", color: "primary" },
+    { label: "SCD Carriers", count: 50000000, suffix: "+", icon: "Users", color: "primary" },
+    { label: "Annual SCD Births", count: 150000, suffix: "+", icon: "Award", color: "primary" }
+  ];
+
+  const displayStats = stats.length > 0 ? stats : defaultStats;
+
   return (
-    <div className="min-h-screen">
+    <motion.div
+      className="min-h-screen"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.5 }}
+    >
       {/* Hero Section */}
       <section className="relative min-h-screen pt-32 pb-20 flex items-center justify-center overflow-hidden bg-background">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        
+
         <div className="relative container mx-auto px-4 z-10">
           <div className="max-w-3xl">
-            <motion.h1 
+            <motion.h1
               className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              Bringing <span className="text-primary">Hope</span> to Those Affected by Sickle Cell
+              {heroTitle}
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              We believe prevention starts with awareness. We believe patients deserve hope. ❤️
+              {heroSubtitle}
             </motion.p>
-            <motion.div 
+            <motion.div
               className="flex flex-wrap gap-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -56,7 +129,7 @@ const Home = () => {
       {/* Impact Stats Section */}
       <section className="py-20 bg-background border-t border-border">
         <div className="container mx-auto px-4">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -69,39 +142,39 @@ const Home = () => {
             </p>
           </motion.div>
 
+          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {[
-              { icon: Heart, count: 100000, label: "Annual SCD Deaths Of Children Under 5 Years", color: "primary", suffix: "+" },
-              { icon: Users, count: 50000000, label: "SCD Carriers", color: "primary", suffix: "+" },
-              { icon: Award, count: 150000, label: "Annual SCD Births", color: "primary", suffix: "+" }
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="text-center border-none rounded-2xl shadow-[var(--shadow-card)] card-hover">
-                  <CardContent className="pt-8 pb-8">
-                    <motion.div 
-                      className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${stat.color}/10 flex items-center justify-center`}
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <stat.icon className={`w-8 h-8 text-${stat.color}`} />
-                    </motion.div>
-                    <div className={`text-4xl font-bold text-${stat.color} mb-2`}>
-                      <StatCounter end={stat.count} suffix={stat.suffix} />
-                    </div>
-                    <p className="text-lg text-muted-foreground">{stat.label}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {displayStats.map((stat, index) => {
+              const IconComponent = iconMap[stat.icon || "Heart"] || Heart;
+              return (
+                <motion.div
+                  key={stat.id || index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <Card className="text-center border-none rounded-2xl shadow-[var(--shadow-card)] card-hover">
+                    <CardContent className="pt-8 pb-8">
+                      <motion.div
+                        className={`w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center`}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <IconComponent className={`w-8 h-8 text-primary`} />
+                      </motion.div>
+                      <div className={`text-4xl font-bold text-primary mb-2`}>
+                        <StatCounter end={stat.count} suffix={stat.suffix} />
+                      </div>
+                      <p className="text-lg text-muted-foreground">{stat.label}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
 
-          <motion.div 
+          <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -130,14 +203,9 @@ const Home = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
-                Red Hope is dedicated to raising awareness about sickle cell disease and providing 
-                support to affected individuals and their families across Nigeria and beyond.
+                {missionDesc}
               </p>
-              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                Through community outreach, education programs, and medical support initiatives, 
-                we're working to create a future where sickle cell disease is understood, 
-                manageable, and no longer a barrier to living a full life.
-              </p>
+
               <Button variant="default" size="lg" asChild>
                 <Link to="/about">
                   Learn More About Us <ArrowRight className="ml-2 w-5 h-5" />
@@ -187,26 +255,25 @@ const Home = () => {
           }}
         />
         <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            Join the Movement
+            {ctaTitle}
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Your support can save lives. Whether through donations, volunteering, or spreading awareness, 
-            every action counts.
+            {ctaDesc}
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex flex-wrap gap-4 justify-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -232,7 +299,7 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 };
 

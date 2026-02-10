@@ -51,6 +51,11 @@ export default function AdminLayout() {
       icon: LayoutDashboard,
     },
     {
+      title: "Content Manager",
+      url: "/admin/content",
+      icon: FileText,
+    },
+    {
       title: "Blog Posts",
       url: "/admin/blog-posts",
       icon: FileText,
@@ -173,7 +178,7 @@ export default function AdminLayout() {
           </div>
         </header>
         <div className="flex-1 p-4 pt-0">
-            <Outlet />
+          <Outlet />
         </div>
       </SidebarInset>
     </SidebarProvider>
