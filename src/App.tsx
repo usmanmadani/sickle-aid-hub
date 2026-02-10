@@ -3,8 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
+import PublicLayout from "./components/layouts/PublicLayout";
+import AdminLayout from "./components/layouts/AdminLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
@@ -29,26 +29,28 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Navigation />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/programs" element={<Programs />} />
-          <Route path="/genotype-checker" element={<GenotypeChecker />} />
-          <Route path="/testing-centers" element={<TestingCenters />} />
-          <Route path="/resources" element={<EducationalHub />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/donate" element={<Donate />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/blog-posts" element={<BlogPosts />} />
-          <Route path="/admin/programs" element={<AdminPrograms />} />
-          <Route path="/admin/donations" element={<AdminDonations />} />
-          <Route path="/admin/contacts" element={<AdminContacts />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/genotype-checker" element={<GenotypeChecker />} />
+            <Route path="/testing-centers" element={<TestingCenters />} />
+            <Route path="/resources" element={<EducationalHub />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="blog-posts" element={<BlogPosts />} />
+            <Route path="programs" element={<AdminPrograms />} />
+            <Route path="donations" element={<AdminDonations />} />
+            <Route path="contacts" element={<AdminContacts />} />
+          </Route>
         </Routes>
-        <Footer />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

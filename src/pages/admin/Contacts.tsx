@@ -88,61 +88,59 @@ const Contacts = () => {
   const unreadCount = contacts.filter((c) => !c.read).length;
 
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="mb-6 flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Contact Messages</h1>
-            <p className="text-muted-foreground">{unreadCount} unread messages</p>
-          </div>
+    <div className="space-y-6">
+      <div className="mb-6 flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Contact Messages</h1>
+          <p className="text-muted-foreground">{unreadCount} unread messages</p>
         </div>
+      </div>
 
-        <div className="space-y-4">
-          {contacts.map((contact, index) => (
-            <motion.div
-              key={contact.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-            >
-              <Card className={contact.read ? 'opacity-70' : ''}>
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {contact.read ? (
-                        <MailOpen className="h-5 w-5 text-muted-foreground" />
-                      ) : (
-                        <Mail className="h-5 w-5 text-primary" />
-                      )}
-                      <div>
-                        <h3 className="font-semibold">{contact.name}</h3>
-                        <p className="text-sm text-muted-foreground">{contact.email}</p>
-                      </div>
+      <div className="space-y-4">
+        {contacts.map((contact, index) => (
+          <motion.div
+            key={contact.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+          >
+            <Card className={contact.read ? 'opacity-70' : ''}>
+              <CardContent className="pt-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {contact.read ? (
+                      <MailOpen className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <Mail className="h-5 w-5 text-primary" />
+                    )}
+                    <div>
+                      <h3 className="font-semibold">{contact.name}</h3>
+                      <p className="text-sm text-muted-foreground">{contact.email}</p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => markAsRead(contact.id, !contact.read)}
-                    >
-                      {contact.read ? 'Mark Unread' : 'Mark Read'}
-                    </Button>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => markAsRead(contact.id, !contact.read)}
+                  >
+                    {contact.read ? 'Mark Unread' : 'Mark Read'}
+                  </Button>
+                </div>
 
-                  <div className="space-y-2">
-                    <p className="font-medium">Subject: {contact.subject}</p>
-                    <p className="text-muted-foreground">{contact.message}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(contact.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                <div className="space-y-2">
+                  <p className="font-medium">Subject: {contact.subject}</p>
+                  <p className="text-muted-foreground">{contact.message}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(contact.created_at).toLocaleString()}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     </div>
   );

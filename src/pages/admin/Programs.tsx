@@ -148,148 +148,146 @@ const Programs = () => {
   if (!isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-3xl font-bold">Programs</h1>
-          </div>
-          <Button onClick={() => setShowForm(!showForm)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Program
+    <div className="space-y-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <h1 className="text-3xl font-bold">Programs</h1>
         </div>
+        <Button onClick={() => setShowForm(!showForm)}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Program
+        </Button>
+      </div>
 
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>{editingProgram ? 'Edit Program' : 'Create New Program'}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+      {showForm && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>{editingProgram ? 'Edit Program' : 'Create New Program'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Title</Label>
+                    <Label htmlFor="location">Location</Label>
                     <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      required
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows={5}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={formData.location}
-                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="attendance">Attendance</Label>
+                    <Label htmlFor="date">Date</Label>
                     <Input
-                      id="attendance"
-                      type="number"
-                      value={formData.attendance}
-                      onChange={(e) => setFormData({ ...formData, attendance: parseInt(e.target.value) || 0 })}
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="image_url">Image URL</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={loading}>
-                      {loading ? 'Saving...' : editingProgram ? 'Update' : 'Create'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowForm(false);
-                        setEditingProgram(null);
-                        setFormData({ title: '', description: '', location: '', date: '', attendance: 0, image_url: '' });
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        <div className="space-y-4">
-          {programs.map((program) => (
-            <Card key={program.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2">{program.title}</h3>
-                    <p className="text-muted-foreground mb-2">{program.description}</p>
-                    <div className="text-sm text-muted-foreground space-y-1">
-                      {program.location && <p>Location: {program.location}</p>}
-                      {program.date && <p>Date: {new Date(program.date).toLocaleDateString()}</p>}
-                      <p>Attendance: {program.attendance}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="icon" onClick={() => handleEdit(program)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleDelete(program.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="attendance">Attendance</Label>
+                  <Input
+                    id="attendance"
+                    type="number"
+                    value={formData.attendance}
+                    onChange={(e) => setFormData({ ...formData, attendance: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="image_url">Image URL</Label>
+                  <Input
+                    id="image_url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : editingProgram ? 'Update' : 'Create'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      setEditingProgram(null);
+                      setFormData({ title: '', description: '', location: '', date: '', attendance: 0, image_url: '' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      <div className="space-y-4">
+        {programs.map((program) => (
+          <Card key={program.id}>
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-2">{program.title}</h3>
+                  <p className="text-muted-foreground mb-2">{program.description}</p>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    {program.location && <p>Location: {program.location}</p>}
+                    {program.date && <p>Date: {new Date(program.date).toLocaleDateString()}</p>}
+                    <p>Attendance: {program.attendance}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon" onClick={() => handleEdit(program)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleDelete(program.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

@@ -77,61 +77,58 @@ const Donations = () => {
   const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount), 0);
 
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="mb-6 flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Donations</h1>
-            <p className="text-muted-foreground">
-              Total Donations: ₦{totalDonations.toLocaleString()}
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div className="mb-6 flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Donations</h1>
+          <p className="text-muted-foreground">
+            Total Donations: ₦{totalDonations.toLocaleString()}
+          </p>
         </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Donor Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Message</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {donations.map((donation) => (
-                  <TableRow key={donation.id}>
-                    <TableCell>
-                      {new Date(donation.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{donation.donor_name}</TableCell>
-                    <TableCell>{donation.donor_email}</TableCell>
-                    <TableCell>₦{Number(donation.amount).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${
-                          donation.payment_status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
-                        }`}
-                      >
-                        {donation.payment_status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{donation.message || '-'}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Donor Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Message</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {donations.map((donation) => (
+                <TableRow key={donation.id}>
+                  <TableCell>
+                    {new Date(donation.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>{donation.donor_name}</TableCell>
+                  <TableCell>{donation.donor_email}</TableCell>
+                  <TableCell>₦{Number(donation.amount).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${donation.payment_status === 'completed'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                        }`}
+                    >
+                      {donation.payment_status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{donation.message || '-'}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };
