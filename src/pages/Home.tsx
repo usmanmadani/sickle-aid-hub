@@ -83,9 +83,9 @@ const Home = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
-      <section className="relative min-h-screen pt-32 pb-20 flex items-center justify-center overflow-hidden bg-background">
+      <section className="relative min-h-screen pt-24 md:pt-32 pb-20 flex items-center justify-center overflow-hidden bg-muted/30">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
 
