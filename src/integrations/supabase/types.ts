@@ -107,6 +107,42 @@ export type Database = {
         }
         Relationships: []
       }
+      impact_stats: {
+        Row: {
+          color: string | null
+          count: number
+          created_at: string
+          icon: string | null
+          id: string
+          label: string
+          order: number | null
+          suffix: string | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          count: number
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label: string
+          order?: number | null
+          suffix?: string | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          count?: number
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          order?: number | null
+          suffix?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -164,6 +200,30 @@ export type Database = {
           location?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
