@@ -20,6 +20,7 @@ import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
 import AdminContacts from "./pages/admin/Contacts";
 import ContentManager from "./pages/admin/ContentManager";
+import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/genotype-checker" element={<GenotypeChecker />} />
             <Route path="/testing-centers" element={<TestingCenters />} />
             <Route path="/resources" element={<EducationalHub />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/donate" element={<Donate />} />
             <Route path="/auth" element={<Auth />} />
