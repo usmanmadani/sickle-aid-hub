@@ -7,8 +7,6 @@ import { Users, Heart, Award, ArrowRight, Activity, Globe } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import Testimonials from "@/components/home/Testimonials";
-import NewsletterForm from "@/components/NewsletterForm";
 
 const iconMap: any = {
   Heart,
@@ -60,7 +58,6 @@ const Home = () => {
     fetchContent();
   }, []);
 
-  // Defaults if loading or no data
   const heroTitle = hero?.title || "Bringing Hope to Those Affected by Sickle Cell";
   const heroSubtitle = hero?.subtitle || "We believe prevention starts with awareness. We believe patients deserve hope. ❤️";
   const missionDesc = mission?.description || "Red Hope is dedicated to raising awareness about sickle cell disease and providing support to affected individuals and their families across Nigeria and beyond.";
@@ -90,7 +87,6 @@ const Home = () => {
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-
         <div className="relative container mx-auto px-4 z-10">
           <div className="max-w-3xl">
             <motion.h1
@@ -159,13 +155,13 @@ const Home = () => {
                   <Card className="text-center border-none rounded-2xl shadow-[var(--shadow-card)] card-hover">
                     <CardContent className="pt-8 pb-8">
                       <motion.div
-                        className={`w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center`}
+                        className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         transition={{ type: "spring", stiffness: 300 }}
                       >
-                        <IconComponent className={`w-8 h-8 text-primary`} />
+                        <IconComponent className="w-8 h-8 text-primary" />
                       </motion.div>
-                      <div className={`text-4xl font-bold text-primary mb-2`}>
+                      <div className="text-4xl font-bold text-primary mb-2">
                         <StatCounter end={stat.count} suffix={stat.suffix} />
                       </div>
                       <p className="text-lg text-muted-foreground">{stat.label}</p>
@@ -207,7 +203,6 @@ const Home = () => {
               <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
                 {missionDesc}
               </p>
-
               <Button variant="default" size="lg" asChild>
                 <Link to="/about">
                   Learn More About Us <ArrowRight className="ml-2 w-5 h-5" />
@@ -216,10 +211,10 @@ const Home = () => {
             </motion.div>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { title: "Education", desc: "Spreading awareness through workshops and community programs.", color: "primary" },
-                { title: "Testing", desc: "Free genotype testing in communities nationwide.", color: "primary" },
-                { title: "Support", desc: "Counseling and resources for affected families.", color: "primary" },
-                { title: "Advocacy", desc: "Fighting for better healthcare policies and access.", color: "primary" }
+                { title: "Education", desc: "Spreading awareness through workshops and community programs." },
+                { title: "Testing", desc: "Free genotype testing in communities nationwide." },
+                { title: "Support", desc: "Counseling and resources for affected families." },
+                { title: "Advocacy", desc: "Fighting for better healthcare policies and access." }
               ].map((item, index) => (
                 <motion.div
                   key={item.title}
@@ -229,17 +224,15 @@ const Home = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <Card className="p-6 rounded-2xl shadow-[var(--shadow-card)] card-hover border-l-4 border-l-primary">
-                    <h3 className={`font-semibold text-lg mb-2 text-${item.color}`}>{item.title}</h3>
+                    <h3 className="font-semibold text-lg mb-2 text-primary">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">{item.desc}</p>
                   </Card>
                 </motion.div>
               ))}
             </div>
           </div>
+        </div>
       </section>
-
-      {/* Testimonials Section */}
-      <Testimonials />
 
       {/* Call to Action */}
       <section className="py-20 bg-primary relative overflow-hidden">
@@ -277,50 +270,34 @@ const Home = () => {
           >
             {ctaDesc}
           </motion.p>
-
-          <div className="flex flex-col gap-8 items-center">
-            <motion.div
-              className="flex flex-wrap gap-4 justify-center w-full"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+          <motion.div
+            className="flex flex-wrap gap-4 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-background text-foreground border-2 border-background hover:bg-background/90 hover:scale-105 transition-all duration-300"
+              asChild
             >
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-background text-foreground border-2 border-background hover:bg-background/90 hover:scale-105 transition-all duration-300"
-                asChild
-              >
-                <Link to="/donate">Make a Donation</Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-transparent text-primary-foreground border-2 border-primary-foreground hover:bg-primary-foreground/10 hover:scale-105 transition-all duration-300"
-                asChild
-              >
-                <Link to="/contact">Get Involved</Link>
-              </Button>
-            </motion.div>
-
-            <motion.div
-              className="w-full max-w-md bg-background/10 backdrop-blur-sm p-6 rounded-2xl border border-primary-foreground/20 mt-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              <Link to="/donate">Make a Donation</Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-transparent text-primary-foreground border-2 border-primary-foreground hover:bg-primary-foreground/10 hover:scale-105 transition-all duration-300"
+              asChild
             >
-              <h3 className="text-xl font-semibold text-primary-foreground mb-4">Stay Updated</h3>
-              <p className="text-sm text-primary-foreground/80 mb-4">
-                Join our newsletter to receive updates on our impact and upcoming events.
-              </p>
-              <NewsletterForm />
-            </motion.div>
-          </div>
+              <Link to="/contact">Get Involved</Link>
+            </Button>
+          </motion.div>
         </div>
       </section>
     </motion.div>
   );
 };
+
 export default Home;
