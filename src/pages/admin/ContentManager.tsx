@@ -120,7 +120,7 @@ const ContentManager = () => {
         try {
             const { error } = await supabase
                 .from('impact_stats')
-                .insert([newStat]);
+                .insert([{ label: newStat.label!, count: newStat.count!, suffix: newStat.suffix, icon: newStat.icon, order: newStat.order }]);
 
             if (error) throw error;
 
