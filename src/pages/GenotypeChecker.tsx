@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, Heart, ShieldCheck, ShieldAlert } from "lucide-react";
+import { AlertCircle, ArrowRight, RefreshCcw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import RiskVisualizer from "@/components/genotype/RiskVisualizer";
+import PunnettSquare from "@/components/genotype/PunnettSquare";
+import GenotypeInput from "@/components/genotype/GenotypeInput"; // Assuming this handles the multi-step input
+import InheritanceSimulation from "@/components/genotype/InheritanceSimulation";
 
 type Genotype = "AA" | "AS" | "SS" | "AC" | "SC" | "";
 
@@ -12,6 +16,7 @@ interface RiskResult {
   title: string;
   description: string;
   outcomes: string[];
+  combinations: string[]; // For simulation
 }
 
 const calculateRisk = (genotype1: Genotype, genotype2: Genotype): RiskResult | null => {
@@ -21,62 +26,72 @@ const calculateRisk = (genotype1: Genotype, genotype2: Genotype): RiskResult | n
     "AA-AA": {
       risk: "low",
       title: "No Risk",
-      description: "All children will have normal hemoglobin (AA genotype).",
+      description: "Excellent compatibility! All children will have normal hemoglobin (AA genotype).",
       outcomes: ["100% AA - Normal hemoglobin"],
+      combinations: ["AA", "AA", "AA", "AA"]
     },
     "AA-AS": {
       risk: "low",
       title: "Low Risk",
-      description: "Children will either be carriers or have normal hemoglobin.",
+      description: "Safe compatibility. Children will either be carriers or have normal hemoglobin, but none will have the disease.",
       outcomes: ["50% AA - Normal", "50% AS - Carrier (healthy)"],
+      combinations: ["AA", "AS", "AA", "AS"]
     },
     "AA-SS": {
       risk: "moderate",
       title: "Carrier Only",
-      description: "All children will be carriers but won't have the disease.",
+      description: "All children will be carriers (AS) but won't have the disease itself. They will live healthy lives.",
       outcomes: ["100% AS - Carrier (healthy)"],
+      combinations: ["AS", "AS", "AS", "AS"]
     },
     "AS-AS": {
       risk: "high",
       title: "High Risk",
-      description: "There's a 25% chance each child will have sickle cell disease.",
+      description: "Warning: There is a 25% chance in EVERY pregnancy that the child will have sickle cell disease (SS).",
       outcomes: ["25% AA - Normal", "50% AS - Carrier", "25% SS - Sickle Cell Disease"],
+      combinations: ["AA", "AS", "AS", "SS"]
     },
     "AS-SS": {
       risk: "high",
       title: "Very High Risk",
-      description: "50% chance of children having sickle cell disease.",
+      description: "Critical Warning: There is a 50% chance in EVERY pregnancy that the child will have sickle cell disease.",
       outcomes: ["50% AS - Carrier", "50% SS - Sickle Cell Disease"],
+      combinations: ["AS", "SS", "AS", "SS"]
     },
     "SS-SS": {
       risk: "high",
       title: "Certain Risk",
-      description: "All children will have sickle cell disease.",
+      description: "Incompatible. All children will have sickle cell disease (SS). Professional counseling is strongly advised.",
       outcomes: ["100% SS - Sickle Cell Disease"],
+      combinations: ["SS", "SS", "SS", "SS"]
     },
     "AA-AC": {
       risk: "low",
       title: "Low Risk",
-      description: "Children will have normal or AC trait.",
+      description: "Safe. Children will have normal hemoglobin or be carriers of Hemoglobin C trait.",
       outcomes: ["50% AA - Normal", "50% AC - Carrier (healthy)"],
+      combinations: ["AA", "AC", "AA", "AC"]
     },
     "AS-AC": {
       risk: "moderate",
       title: "Moderate Risk",
-      description: "Small risk of SC disease.",
+      description: "Caution: There is a 25% chance of having a child with SC disease.",
       outcomes: ["25% AA", "25% AS", "25% AC", "25% SC - Disease possible"],
+      combinations: ["AA", "AS", "AC", "SC"]
     },
     "AA-SC": {
       risk: "low",
       title: "Carrier Only",
-      description: "Children will be carriers.",
+      description: "Children will be carriers of either Sickle Cell trait or Hemoglobin C trait, but usually healthy.",
       outcomes: ["50% AS - Carrier", "50% AC - Carrier"],
+      combinations: ["AS", "AC", "AS", "AC"]
     },
     "AS-SC": {
       risk: "high",
       title: "High Risk",
-      description: "Significant risk of disease variants.",
+      description: "High Warning: 25% chance of SS disease and 25% chance of SC disease.",
       outcomes: ["25% AS", "25% SS", "25% AC", "25% SC"],
+      combinations: ["AS", "SS", "AC", "SC"]
     },
   };
 
@@ -86,8 +101,9 @@ const calculateRisk = (genotype1: Genotype, genotype2: Genotype): RiskResult | n
   return combinations[key1] || combinations[key2] || {
     risk: "moderate",
     title: "Consult a Doctor",
-    description: "Please consult with a genetic counselor for this specific combination.",
+    description: "Please consult with a genetic counselor for detailed analysis of this specific combination.",
     outcomes: ["Professional counseling recommended"],
+    combinations: []
   };
 };
 
@@ -95,196 +111,163 @@ const GenotypeChecker = () => {
   const [genotype1, setGenotype1] = useState<Genotype>("");
   const [genotype2, setGenotype2] = useState<Genotype>("");
   const [result, setResult] = useState<RiskResult | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const genotypes: Genotype[] = ["AA", "AS", "SS", "AC", "SC"];
 
-  const handleCheck = () => {
-    const riskResult = calculateRisk(genotype1, genotype2);
-    setResult(riskResult);
+  const handleCheck = (g1: string, g2: string) => {
+    setAnalyzing(true);
+    setGenotype1(g1 as Genotype);
+    setGenotype2(g2 as Genotype);
+
+    // Simulate thinking time for effect
+    setTimeout(() => {
+      const riskResult = calculateRisk(g1 as Genotype, g2 as Genotype);
+      setResult(riskResult);
+      setAnalyzing(false);
+    }, 1500);
   };
 
-  const getRiskIcon = (risk: string) => {
-    switch (risk) {
-      case "low":
-        return <ShieldCheck className="w-12 h-12 text-primary" />;
-      case "moderate":
-        return <AlertCircle className="w-12 h-12 text-accent" />;
-      case "high":
-        return <ShieldAlert className="w-12 h-12 text-destructive" />;
-      default:
-        return <Heart className="w-12 h-12 text-muted-foreground" />;
-    }
+  const reset = () => {
+    setResult(null);
+    setGenotype1("");
+    setGenotype2("");
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 pb-20 bg-gradient-to-br from-background via-muted/30 to-background overflow-x-hidden">
+
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <Heart className="w-16 h-16 text-primary mx-auto mb-6" fill="currentColor" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Genotype Compatibility Checker</h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              Check the compatibility of two genotypes and understand the potential risks for your children.
-              Knowledge is the first step towards prevention.
-            </p>
-          </div>
-        </div>
-      </section>
+      <motion.section
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="py-12 text-center container mx-auto px-4"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+          Compatibility Checker
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Discover how your genetics interact. Interactive, visual, and easy to understand.
+        </p>
+      </motion.section>
 
-      {/* Checker Tool */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto shadow-[var(--shadow-glow)]">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Select Your Genotypes</CardTitle>
-              <CardDescription className="text-center">
-                Choose your genotype and your partner's genotype to see the compatibility results
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Your Genotype</label>
-                  <Select value={genotype1} onValueChange={(value) => setGenotype1(value as Genotype)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your genotype" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {genotypes.map((g) => (
-                        <SelectItem key={g} value={g}>
-                          {g}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+      <section className="container mx-auto px-4">
+        <AnimatePresence mode="wait">
+          {!result && !analyzing && (
+            <motion.div
+              key="input"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Use the new GenotypeInput component here (which you'll create/import) */}
+              <GenotypeInput onCheck={handleCheck} genotypes={genotypes} />
+            </motion.div>
+          )}
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Partner's Genotype</label>
-                  <Select value={genotype2} onValueChange={(value) => setGenotype2(value as Genotype)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select partner's genotype" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {genotypes.map((g) => (
-                        <SelectItem key={g} value={g}>
-                          {g}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          {analyzing && (
+            <motion.div
+              key="analyzing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-20"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                className="w-24 h-24 border-4 border-primary border-t-transparent rounded-full mb-8"
+              />
+              <h2 className="text-2xl font-bold animate-pulse">Analyzing Genetics...</h2>
+            </motion.div>
+          )}
+
+          {result && !analyzing && (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 100 }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Visual Risk Indicator */}
+                <Card className="overflow-hidden border-2 border-primary/10 shadow-lg">
+                  <CardHeader className="bg-muted/30 pb-2">
+                    <CardTitle className="text-center">Risk Assessment</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RiskVisualizer risk={result.risk} />
+                    <div className="text-center mt-4">
+                      <h3 className="text-xl font-bold mb-2">{result.title}</h3>
+                      <p className="text-muted-foreground">{result.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Genetic Breakdown */}
+                <Card className="overflow-hidden border-2 border-primary/10 shadow-lg">
+                  <CardHeader className="bg-muted/30 pb-2">
+                    <CardTitle className="text-center">Genetic Combination</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center">
+                    <PunnettSquare g1={genotype1} g2={genotype2} />
+                    <div className="mt-6 w-full">
+                      <h4 className="font-semibold mb-2 text-center text-sm uppercase tracking-wider text-muted-foreground">Potential Outcomes</h4>
+                      <ul className="space-y-2">
+                        {result.outcomes.map((outcome, idx) => (
+                          <motion.li
+                            key={idx}
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.5 + (idx * 0.1) }}
+                            className="flex items-center gap-2 text-sm p-2 rounded-lg bg-muted/40"
+                          >
+                            <ArrowRight className="w-4 h-4 text-primary" />
+                            {outcome}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              <Button
-                onClick={handleCheck}
-                disabled={!genotype1 || !genotype2}
-                variant="hero"
-                size="lg"
-                className="w-full"
+              {/* Simulation Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="mb-12"
               >
-                Check Compatibility
-              </Button>
+                <h3 className="text-2xl font-bold text-center mb-6">If you had 4 children...</h3>
+                <p className="text-center text-muted-foreground mb-4">
+                  This is a simulation of probability. In reality, every pregnancy carries the same independent risk.
+                </p>
+                <InheritanceSimulation combinations={result.combinations} />
+              </motion.div>
 
-              {/* Results */}
-              {result && (
-                <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                  <Alert className={`border-2 ${
-                    result.risk === "low" ? "border-primary/50 bg-primary/5" :
-                    result.risk === "moderate" ? "border-accent/50 bg-accent/5" :
-                    "border-destructive/50 bg-destructive/5"
-                  }`}>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1">{getRiskIcon(result.risk)}</div>
-                      <div className="flex-1">
-                        <AlertTitle className="text-xl mb-2">{result.title}</AlertTitle>
-                        <AlertDescription className="text-base">
-                          <p className="mb-4">{result.description}</p>
-                          <div className="space-y-2">
-                            <p className="font-semibold">Possible Outcomes:</p>
-                            <ul className="list-disc list-inside space-y-1">
-                              {result.outcomes.map((outcome, idx) => (
-                                <li key={idx}>{outcome}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </AlertDescription>
-                      </div>
-                    </div>
-                  </Alert>
+              <div className="flex justify-center">
+                <Button onClick={reset} size="lg" variant="outline" className="gap-2 text-lg">
+                  <RefreshCcw className="w-5 h-5" /> Check Another Couple
+                </Button>
+              </div>
 
-                  <Card className="bg-muted">
-                    <CardContent className="pt-6">
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Important:</strong> This tool provides general information only. 
-                        Please consult with a genetic counselor or healthcare professional for 
-                        personalized advice and testing.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Educational Section */}
-      <section className="py-20 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-8 text-center">Understanding Genotypes</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">AA - Normal</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Normal hemoglobin. No sickle cell trait or disease.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">AS - Carrier</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Sickle cell trait carrier. Usually healthy but can pass the trait to children.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">SS - Disease</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Sickle cell disease. Requires ongoing medical care and management.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">AC/SC - Variants</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Hemoglobin C trait or SC disease. Different variants with varying effects.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
+              <Alert className="mt-12 bg-blue-50 border-blue-200 text-blue-800">
+                <AlertCircle className="h-5 w-5 text-blue-600" />
+                <AlertTitle>Medical Disclaimer</AlertTitle>
+                <AlertDescription>
+                  This tool mimics genetic inheritance patterns but defaults to probability averages.
+                  It is not a substitute for professional medical advice. Always consult a doctor
+                  or genetic counselor before making family planning decisions.
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </div>
   );
 };
-
 export default GenotypeChecker;
