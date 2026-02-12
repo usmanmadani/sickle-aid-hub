@@ -8,6 +8,7 @@ import RiskVisualizer from "@/components/genotype/RiskVisualizer";
 import PunnettSquare from "@/components/genotype/PunnettSquare";
 import GenotypeInput from "@/components/genotype/GenotypeInput"; // Assuming this handles the multi-step input
 import InheritanceSimulation from "@/components/genotype/InheritanceSimulation";
+import heroImage from "@/assets/hero-image.jpg";
 
 type Genotype = "AA" | "AS" | "SS" | "AC" | "SC" | "";
 
@@ -138,18 +139,24 @@ const GenotypeChecker = () => {
     <div className="min-h-screen pt-20 pb-20 bg-gradient-to-br from-background via-muted/30 to-background overflow-x-hidden">
 
       {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="py-12 text-center container mx-auto px-4"
-      >
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-          Compatibility Checker
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover how your genetics interact. Interactive, visual, and easy to understand.
-        </p>
-      </motion.section>
+      <section className="relative py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 text-center container mx-auto px-4"
+        >
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+            Compatibility Checker
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Discover how your genetics interact. Interactive, visual, and easy to understand.
+          </p>
+        </motion.div>
+      </section>
 
       <section className="container mx-auto px-4">
         <AnimatePresence mode="wait">
