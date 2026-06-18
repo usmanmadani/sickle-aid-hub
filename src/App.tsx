@@ -15,6 +15,8 @@ import TestingCenters from "./pages/TestingCenters";
 import EducationalHub from "./pages/EducationalHub";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminUsers from "./pages/admin/Users";
+import UserDashboard from "./pages/Dashboard";
 import BlogPosts from "./pages/admin/BlogPosts";
 import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
