@@ -70,6 +70,15 @@ const Navigation = () => {
                 {link.name}
               </Link>
             ))}
+            {user && (
+              <Link
+                to="/dashboard"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 to="/admin"
