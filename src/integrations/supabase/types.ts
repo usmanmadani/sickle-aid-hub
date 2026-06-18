@@ -185,6 +185,42 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          genotype: string | null
+          id: string
+          is_test: boolean
+          location: string | null
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          genotype?: string | null
+          id?: string
+          is_test?: boolean
+          location?: string | null
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          genotype?: string | null
+          id?: string
+          is_test?: boolean
+          location?: string | null
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -266,27 +302,6 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: Json
-        }
-        Relationships: []
-      }
-      test_accounts: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string
         }
         Relationships: []
       }
