@@ -52,6 +52,12 @@ export default function AdminLayout() {
       icon: LayoutDashboard,
     },
     {
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: Users,
+    },
+    {
       title: "Content Manager",
       url: "/admin/content",
       icon: FileText,
