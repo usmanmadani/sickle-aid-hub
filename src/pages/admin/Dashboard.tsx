@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { FileText, Calendar, DollarSign, Mail, Loader2, ArrowUpRight } from 'lucide-react';
+import { FileText, Calendar, DollarSign, Mail, Loader2, ArrowUpRight, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
