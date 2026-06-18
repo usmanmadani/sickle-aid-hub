@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield, LogOut } from "lucide-react";
+import { Menu, X, Shield, LogOut, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/red-hope-logo.jpg";
 import { useAuth } from "@/hooks/useAuth";
