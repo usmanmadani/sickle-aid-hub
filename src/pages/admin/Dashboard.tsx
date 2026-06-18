@@ -68,6 +68,13 @@ const AdminDashboard = () => {
 
   const statCards = [
     {
+      title: 'Total Users',
+      value: stats?.usersCount.toLocaleString(),
+      description: 'Registered platform users',
+      icon: Users,
+      color: 'text-primary',
+    },
+    {
       title: 'Total Donations',
       value: `₦${stats?.totalDonations.toLocaleString()}`,
       description: 'Lifetime donations received',
