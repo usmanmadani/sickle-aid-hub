@@ -45,11 +45,13 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/donate" element={<Donate />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="content" element={<ContentManager />} />
             <Route path="blog-posts" element={<BlogPosts />} />
             <Route path="programs" element={<AdminPrograms />} />
