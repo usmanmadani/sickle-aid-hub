@@ -15,6 +15,8 @@ import TestingCenters from "./pages/TestingCenters";
 import EducationalHub from "./pages/EducationalHub";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminUsers from "./pages/admin/Users";
+import UserDashboard from "./pages/Dashboard";
 import BlogPosts from "./pages/admin/BlogPosts";
 import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
@@ -43,11 +45,13 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/donate" element={<Donate />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="content" element={<ContentManager />} />
             <Route path="blog-posts" element={<BlogPosts />} />
             <Route path="programs" element={<AdminPrograms />} />

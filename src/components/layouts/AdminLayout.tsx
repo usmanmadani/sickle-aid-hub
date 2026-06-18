@@ -19,6 +19,7 @@ import {
   Mail,
   LogOut,
   Settings,
+  Users,
 } from "lucide-react";
 import { useLocation, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +50,11 @@ export default function AdminLayout() {
       title: "Dashboard",
       url: "/admin",
       icon: LayoutDashboard,
+    },
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: Users,
     },
     {
       title: "Content Manager",

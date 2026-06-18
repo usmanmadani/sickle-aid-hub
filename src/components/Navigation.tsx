@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield, LogOut } from "lucide-react";
+import { Menu, X, Shield, LogOut, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/red-hope-logo.jpg";
 import { useAuth } from "@/hooks/useAuth";
@@ -70,6 +70,15 @@ const Navigation = () => {
                 {link.name}
               </Link>
             ))}
+            {user && (
+              <Link
+                to="/dashboard"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 to="/admin"

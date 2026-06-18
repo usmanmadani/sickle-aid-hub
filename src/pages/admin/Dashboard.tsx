@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { FileText, Calendar, DollarSign, Mail, Loader2, ArrowUpRight } from 'lucide-react';
+import { FileText, Calendar, DollarSign, Mail, Loader2, ArrowUpRight, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,16 +20,16 @@ const AdminDashboard = () => {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [posts, programs, donations, contacts] = await Promise.all([
+      const [posts, programs, donations, contacts, users] = await Promise.all([
         supabase.from('blog_posts').select('id', { count: 'exact' }),
         supabase.from('programs').select('id', { count: 'exact' }),
         supabase.from('donations').select('amount, created_at'),
         supabase.from('contacts').select('id', { count: 'exact' }).eq('read', false),
+        supabase.from('test_accounts').select('id', { count: 'exact', head: true }),
       ]);
 
       const totalDonations = donations.data?.reduce((sum, d) => sum + Number(d.amount), 0) || 0;
 
-      // Process donations for chart
       const donationsByMonth = donations.data?.reduce((acc: any, donation) => {
         const date = new Date(donation.created_at);
         const month = date.toLocaleString('default', { month: 'short' });
@@ -45,9 +45,10 @@ const AdminDashboard = () => {
       return {
         postsCount: posts.count || 0,
         programsCount: programs.count || 0,
-        donationsCount: donations.count || 0, // specific count if needed, but we used select amount
+        donationsCount: donations.count || 0,
         totalDonations,
         unreadContacts: contacts.count || 0,
+        usersCount: users.count || 0,
         chartData
       };
     },
@@ -66,6 +67,13 @@ const AdminDashboard = () => {
   if (!isAdmin) return null;
 
   const statCards = [
+    {
+      title: 'Total Users',
+      value: stats?.usersCount.toLocaleString(),
+      description: 'Registered platform users',
+      icon: Users,
+      color: 'text-primary',
+    },
     {
       title: 'Total Donations',
       value: `₦${stats?.totalDonations.toLocaleString()}`,
@@ -105,7 +113,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.title}

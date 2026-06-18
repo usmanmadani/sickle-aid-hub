@@ -269,6 +269,27 @@ export type Database = {
         }
         Relationships: []
       }
+      test_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           content: string
