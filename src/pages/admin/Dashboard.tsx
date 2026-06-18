@@ -25,7 +25,7 @@ const AdminDashboard = () => {
         supabase.from('programs').select('id', { count: 'exact' }),
         supabase.from('donations').select('amount, created_at'),
         supabase.from('contacts').select('id', { count: 'exact' }).eq('read', false),
-        supabase.from('test_accounts').select('id', { count: 'exact', head: true }),
+        supabase.from('platform_users').select('id', { count: 'exact', head: true }),
       ]);
 
       const totalDonations = donations.data?.reduce((sum, d) => sum + Number(d.amount), 0) || 0;
