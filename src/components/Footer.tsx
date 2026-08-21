@@ -52,15 +52,19 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4 mt-0.5 text-primary" />
-                <span>info@redhope.org</span>
+                <a href="mailto:Redhopeinitiatives@gmail.com" className="hover:text-primary transition-colors break-all">
+                  Redhopeinitiatives@gmail.com
+                </a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4 mt-0.5 text-primary" />
-                <span>+234 XXX XXX XXXX</span>
+                <a href="tel:+2348130852118" className="hover:text-primary transition-colors">
+                  +234 813 085 2118
+                </a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 mt-0.5 text-primary" />
-                <span>Lagos, Nigeria</span>
+                <span>Keffi, Nasarawa State, Nigeria</span>
               </li>
             </ul>
           </div>
