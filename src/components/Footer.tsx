@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram } from "lucide-react";
+import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -52,15 +52,19 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4 mt-0.5 text-primary" />
-                <span>info@redhope.org</span>
+                <a href="mailto:Redhopeinitiatives@gmail.com" className="hover:text-primary transition-colors break-all">
+                  Redhopeinitiatives@gmail.com
+                </a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4 mt-0.5 text-primary" />
-                <span>+234 XXX XXX XXXX</span>
+                <a href="tel:+2348130852118" className="hover:text-primary transition-colors">
+                  +234 813 085 2118
+                </a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 mt-0.5 text-primary" />
-                <span>Lagos, Nigeria</span>
+                <span>Keffi, Nasarawa State, Nigeria</span>
               </li>
             </ul>
           </div>
@@ -70,25 +74,31 @@ const Footer = () => {
             <h3 className="font-semibold mb-4 text-foreground">Follow Us</h3>
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61582870881250"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Facebook"
+                aria-label="Red Hope Initiative on Facebook"
               >
                 <Facebook className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/_red_hope"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
-              </a>
-              <a
-                href="#"
-                className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Instagram"
+                aria-label="Red Hope Initiative on Instagram"
               >
                 <Instagram className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/red-hope-initiatives/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
+                aria-label="Red Hope Initiative on LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
             </div>
           </div>
