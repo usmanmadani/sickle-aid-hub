@@ -8,6 +8,7 @@ import hauwaImg from "@/assets/hauwa.jpg";
 import israelImg from "@/assets/israel.png";
 import leoImg from "@/assets/leo.jpg";
 import aishaImg from "@/assets/aisha.jpg";
+import zannatechLogo from "@/assets/zannatech-logo.png";
 
 const About = () => {
   const teamMembers = [
@@ -122,15 +123,18 @@ const About = () => {
       <section className="py-16 bg-secondary/50 border-y border-border">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-card rounded-3xl p-8 border border-primary/20 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-2">
-              <Badge variant="outline" className="text-xs uppercase font-bold tracking-wider text-primary border-primary/40">
-                Technology & Innovation Partner
-              </Badge>
-              <h3 className="text-2xl font-bold">ZannaTech Innovations Ltd</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-                ZannaTech Innovations Ltd partners with Red Hope Initiative to architect, develop, and maintain the 
-                Sickle Aid Hub web and mobile infrastructure, securing patient health data and powering SickleAid AI.
-              </p>
+            <div className="flex items-center gap-4">
+              <img src={zannatechLogo} alt="ZannaTech Innovations Ltd Logo" className="w-16 h-16 object-contain rounded-2xl bg-white p-1 border shadow-sm shrink-0" />
+              <div className="space-y-1">
+                <Badge variant="outline" className="text-xs uppercase font-bold tracking-wider text-primary border-primary/40">
+                  Technology & Innovation Partner
+                </Badge>
+                <h3 className="text-2xl font-bold">ZannaTech Innovations Ltd</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+                  ZannaTech Innovations Ltd partners with Red Hope Initiative to architect, develop, and maintain the 
+                  Sickle Aid Hub web and mobile infrastructure, securing patient health data and powering SickleAid AI.
+                </p>
+              </div>
             </div>
 
             <Button variant="outline" size="lg" asChild className="rounded-2xl shrink-0 font-semibold border-primary/30">

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, ShieldCheck } from "lucide-react";
 import logo from "@/assets/red-hope-logo.jpg";
+import zannatechLogo from "@/assets/zannatech-logo.png";
 
 const Footer = () => {
   return (
@@ -31,9 +32,12 @@ const Footer = () => {
               genotype awareness, patient care management, and community engagement across Nigeria.
             </p>
 
-            <div className="pt-2 flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-secondary/60 p-3 rounded-xl border border-border/60 max-w-md">
-              <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-              <span>Technology Partner: <strong className="text-foreground">ZannaTech Innovations Ltd</strong></span>
+            <div className="pt-2 flex items-center gap-3 text-xs font-semibold text-muted-foreground bg-secondary/60 p-3 rounded-2xl border border-border/60 max-w-md">
+              <img src={zannatechLogo} alt="ZannaTech Innovations Ltd Logo" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5 border" />
+              <div>
+                <span className="block text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Technology Partner</span>
+                <strong className="text-foreground text-sm">ZannaTech Innovations Ltd</strong>
+              </div>
             </div>
           </div>
 

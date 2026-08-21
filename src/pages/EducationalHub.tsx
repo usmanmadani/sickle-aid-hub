@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Video, HelpCircle, Search, Share2, Globe, Clock, User, Calendar, ExternalLink, Quote } from "lucide-react";
+import { BookOpen, Video, HelpCircle, Search, Share2, Globe, Clock, User, Calendar, ExternalLink, Quote, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Article {
-  id: number;
+  id: string | number;
   title: string;
   category: string;
   description: string;
@@ -20,9 +20,9 @@ interface Article {
   tags: string[];
 }
 
-const articlesData: Article[] = [
+const defaultArticles: Article[] = [
   {
-    id: 1,
+    id: "def-1",
     title: "Understanding Sickle Cell Disease: The Biological Foundations",
     category: "Understanding Sickle Cell Disease",
     description: "A comprehensive guide to understanding hemoglobin gene mutations, red blood cell sickling, and blood flow impact.",
@@ -33,7 +33,7 @@ const articlesData: Article[] = [
     tags: ["Basics", "Biology", "Hemoglobin"]
   },
   {
-    id: 2,
+    id: "def-2",
     title: "How Sickle Cell Disease is Inherited: Punnett Squares Made Simple",
     category: "How Sickle Cell Disease is Inherited",
     description: "Learn how parent genotype combinations pass down traits to offspring with exact percentages.",
@@ -44,7 +44,7 @@ const articlesData: Article[] = [
     tags: ["Genetics", "Inheritance", "Family Planning"]
   },
   {
-    id: 3,
+    id: "def-3",
     title: "Understanding Genotypes: AA, AS, AC, SC & SS Explained",
     category: "Understanding Genotypes",
     description: "A complete breakdown of all major hemoglobin genotypes found across West Africa.",
@@ -55,7 +55,7 @@ const articlesData: Article[] = [
     tags: ["Genotypes", "Testing"]
   },
   {
-    id: 4,
+    id: "def-4",
     title: "Pain Crisis Prevention & Emergency Management Protocols",
     category: "Pain Crisis",
     description: "First-line home protocols, hydration benchmarks, and recognizing severe warning signals.",
@@ -66,7 +66,7 @@ const articlesData: Article[] = [
     tags: ["Pain Management", "Emergency", "Crisis"]
   },
   {
-    id: 5,
+    id: "def-5",
     title: "Optimal Nutrition & Dietary Guidelines for SCD Warriors",
     category: "Nutrition",
     description: "Nutrient-dense Nigerian foods, folic acid supplementation, and immune-supporting diets.",
@@ -77,29 +77,7 @@ const articlesData: Article[] = [
     tags: ["Nutrition", "Folic Acid", "Diet"]
   },
   {
-    id: 6,
-    title: "Mental Health & Emotional Well-Being for Patients and Families",
-    category: "Mental Health",
-    description: "Coping mechanisms for chronic disease anxiety, pain-related distress, and peer support.",
-    content: "Living with a chronic pain condition like sickle cell can take an emotional toll on both patients and caregivers. Anxiety about unexpected pain crises, school or workplace absences, and social stigma are common. Joining support groups, practicing mindfulness, and open family communication build emotional resilience.",
-    readTime: "6 min read",
-    author: "Pharm. Zainab Yusuf",
-    publishDate: "Jun 28, 2026",
-    tags: ["Mental Health", "Wellness", "Support"]
-  },
-  {
-    id: 7,
-    title: "Pregnancy & Sickle Cell: Safe Maternal Protocols",
-    category: "Pregnancy",
-    description: "Essential obstetric care for expectant mothers carrying AS, SC, or SS genotypes.",
-    content: "Pregnancy in women with sickle cell disease requires specialized multidisciplinary care involving hematologists and high-risk obstetricians. Frequent prenatal visits, prophylactic blood transfusions when necessary, folic acid supplementation, and strict hydration lower the risk of maternal and fetal complications.",
-    readTime: "7 min read",
-    author: "Prof. Oladipo Bello",
-    publishDate: "Jun 15, 2026",
-    tags: ["Pregnancy", "Maternal Care"]
-  },
-  {
-    id: 8,
+    id: "def-6",
     title: "Busting Common Sickle Cell Myths vs Scientific Facts",
     category: "Myths vs Facts",
     description: "Debunking widespread cultural myths surrounding genotype compatibility and treatment.",
@@ -129,8 +107,46 @@ export default function EducationalHub() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [articles, setArticles] = useState<Article[]>(defaultArticles);
+  const [loading, setLoading] = useState(true);
 
-  const filteredArticles = articlesData.filter((article) => {
+  // Dynamic fetch from Supabase blog_posts posted by Admin
+  useEffect(() => {
+    async function fetchDynamicPosts() {
+      try {
+        const { data, error } = await supabase
+          .from("blog_posts")
+          .select("*")
+          .eq("published", true)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const dynamicMapped: Article[] = data.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            category: "Understanding Sickle Cell Disease",
+            description: p.excerpt || p.content.slice(0, 140) + "...",
+            content: p.content,
+            readTime: `${Math.ceil(p.content.split(" ").length / 200)} min read`,
+            author: "Red Hope Admin",
+            publishDate: new Date(p.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+            tags: ["Admin Post", "Education"]
+          }));
+
+          setArticles([...dynamicMapped, ...defaultArticles]);
+        }
+      } catch (err) {
+        console.warn("Dynamic articles fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDynamicPosts();
+  }, []);
+
+  const filteredArticles = articles.filter((article) => {
     const matchesCategory = selectedCategory === "All Categories" || article.category === selectedCategory;
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -156,7 +172,7 @@ export default function EducationalHub() {
         <div className="container mx-auto px-4 max-w-7xl text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
             <BookOpen className="w-4 h-4" />
-            <span>Knowledge Centre</span>
+            <span>Dynamic Knowledge Centre</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -164,8 +180,7 @@ export default function EducationalHub() {
           </h1>
 
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto leading-relaxed">
-            Evidence-based medical articles, genetics guides, pain prevention protocols, and FAQs 
-            reviewed by hematologists and health experts.
+            Evidence-based medical articles, genetics guides, pain prevention protocols, and live updates published by Red Hope Initiative healthcare experts.
           </p>
 
           {/* Search bar */}
@@ -201,63 +216,69 @@ export default function EducationalHub() {
 
       {/* Articles Grid */}
       <section className="py-12 container mx-auto px-4 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.map((article) => (
-            <Card key={article.id} className="rounded-3xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-              
-              <CardHeader className="p-6 pb-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="rounded-full text-[11px] font-semibold">
-                    {article.category}
-                  </Badge>
-                  <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {article.readTime}
-                  </span>
-                </div>
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredArticles.map((article) => (
+              <Card key={article.id} className="rounded-3xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                
+                <CardHeader className="p-6 pb-3 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="rounded-full text-[11px] font-semibold">
+                      {article.category}
+                    </Badge>
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {article.readTime}
+                    </span>
+                  </div>
 
-                <CardTitle className="text-xl leading-snug line-clamp-2">
-                  {article.title}
-                </CardTitle>
+                  <CardTitle className="text-xl leading-snug line-clamp-2">
+                    {article.title}
+                  </CardTitle>
 
-                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                  <User className="w-3.5 h-3.5 text-primary" />
-                  <span>{article.author}</span>
-                  <span>•</span>
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>{article.publishDate}</span>
-                </div>
-              </CardHeader>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                    <User className="w-3.5 h-3.5 text-primary" />
+                    <span>{article.author}</span>
+                    <span>•</span>
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>{article.publishDate}</span>
+                  </div>
+                </CardHeader>
 
-              <CardContent className="p-6 pt-0 space-y-4">
-                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                  {article.description}
-                </p>
+                <CardContent className="p-6 pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                    {article.description}
+                  </p>
 
-                <div className="pt-2 flex items-center justify-between border-t border-border/60">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setSelectedArticle(article)}
-                    className="rounded-full text-xs"
-                  >
-                    Read Article
-                  </Button>
+                  <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setSelectedArticle(article)}
+                      className="rounded-full text-xs"
+                    >
+                      Read Article
+                    </Button>
 
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleShare(article)}
-                    className="rounded-full"
-                    title="Share article link"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleShare(article)}
+                      className="rounded-full"
+                      title="Share article link"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
 
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Article Detail View Modal */}

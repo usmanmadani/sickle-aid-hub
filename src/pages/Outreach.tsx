@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Users, Calendar, MapPin, CheckCircle2, ArrowRight, Camera, 
-  Sparkles, School, Stethoscope, Heart, UserPlus 
+  Sparkles, School, Stethoscope, Heart, UserPlus, Loader2 
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import StatCounter from "@/components/StatCounter";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OutreachEvent {
-  id: number;
+  id: string | number;
   title: string;
   type: "Secondary School" | "Medical Outreach" | "Community Sensitization";
   date: string;
@@ -23,9 +24,9 @@ interface OutreachEvent {
   attendees?: string;
 }
 
-const events: OutreachEvent[] = [
+const defaultEvents: OutreachEvent[] = [
   {
-    id: 1,
+    id: "def-1",
     title: "Keffi Secondary Schools Genotype Awareness Campaign",
     type: "Secondary School",
     date: "September 15, 2026",
@@ -36,7 +37,7 @@ const events: OutreachEvent[] = [
     attendees: "Target: 500+ Students"
   },
   {
-    id: 2,
+    id: "def-2",
     title: "Abuja Central Market Medical Screening & Consultation",
     type: "Medical Outreach",
     date: "October 04, 2026",
@@ -47,7 +48,7 @@ const events: OutreachEvent[] = [
     attendees: "Target: 1,000+ Traders & Families"
   },
   {
-    id: 3,
+    id: "def-3",
     title: "World Sickle Cell Day Youth Summit 2026",
     type: "Community Sensitization",
     date: "June 19, 2026",
@@ -58,7 +59,7 @@ const events: OutreachEvent[] = [
     attendees: "Attended: 850 Individuals"
   },
   {
-    id: 4,
+    id: "def-4",
     title: "Lafia Community Health & Pain Care Outreach",
     type: "Medical Outreach",
     date: "April 12, 2026",
@@ -98,6 +99,48 @@ const photoGallery = [
 ];
 
 export default function Outreach() {
+  const [eventsList, setEventsList] = useState<OutreachEvent[]>(defaultEvents);
+  const [loading, setLoading] = useState(true);
+
+  // Dynamic fetch from Supabase programs table posted by Admin
+  useEffect(() => {
+    async function fetchDynamicPrograms() {
+      try {
+        const { data, error } = await supabase
+          .from("programs")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const dynamicMapped: OutreachEvent[] = data.map((p: any) => {
+            const eventDate = p.date ? new Date(p.date) : new Date();
+            const isFuture = eventDate.getTime() > Date.now();
+            return {
+              id: p.id,
+              title: p.title,
+              type: "Community Sensitization",
+              date: eventDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+              location: p.location || "Nigeria",
+              state: "Live Admin Event",
+              status: isFuture ? "Upcoming" : "Completed",
+              description: p.description,
+              attendees: `Target: ${p.attendance || 100}+ Attendees`
+            };
+          });
+
+          setEventsList([...dynamicMapped, ...defaultEvents]);
+        }
+      } catch (err) {
+        console.warn("Dynamic programs fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDynamicPrograms();
+  }, []);
+
   return (
     <div className="min-h-screen pt-20 pb-20 bg-background text-foreground">
       
@@ -154,48 +197,6 @@ export default function Outreach() {
         </div>
       </section>
 
-      {/* Program Streams */}
-      <section className="py-16 container mx-auto px-4 max-w-7xl">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-          <h2 className="text-3xl font-bold">Our Core Outreach Initiatives</h2>
-          <p className="text-sm text-muted-foreground">Targeted interventions tailored for youth, schools, and rural communities.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          <Card className="rounded-3xl border-border p-6 space-y-4 hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-              <School className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold">Secondary School Programs</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Educating students on genetic inheritance before they enter relationships. We conduct free testing and distribute educational workbooks.
-            </p>
-          </Card>
-
-          <Card className="rounded-3xl border-border p-6 space-y-4 hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Stethoscope className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold">Medical Outreach Camps</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Deploying medical teams to rural and peri-urban areas with mobile genotype labs, hematologist consultations, and emergency pain kits.
-            </p>
-          </Card>
-
-          <Card className="rounded-3xl border-border p-6 space-y-4 hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-              <Users className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold">Campus Ambassadors</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Training tertiary institution students across Nigeria to lead peer education, genotype drives, and crisis support networks on campus.
-            </p>
-          </Card>
-
-        </div>
-      </section>
-
       {/* Upcoming & Past Events Tabs */}
       <section className="py-12 bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -218,49 +219,55 @@ export default function Outreach() {
             </div>
 
             <TabsContent value="upcoming" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {events.filter((e) => e.status === "Upcoming").map((event) => (
-                  <Card key={event.id} className="rounded-3xl border-border p-6 space-y-4 hover:shadow-md transition-all bg-card">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="default" className="rounded-full bg-primary text-xs">
-                        {event.type}
-                      </Badge>
-                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                        {event.status}
-                      </span>
-                    </div>
-
-                    <h3 className="text-xl font-bold leading-tight">{event.title}</h3>
-
-                    <div className="space-y-1.5 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <span>{event.date}</span>
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {eventsList.filter((e) => e.status === "Upcoming").map((event) => (
+                    <Card key={event.id} className="rounded-3xl border-border p-6 space-y-4 hover:shadow-md transition-all bg-card">
+                      <div className="flex items-center justify-between">
+                        <Badge variant="default" className="rounded-full bg-primary text-xs">
+                          {event.type}
+                        </Badge>
+                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
+                          {event.status}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-primary" />
-                        <span>{event.location}, {event.state}</span>
+
+                      <h3 className="text-xl font-bold leading-tight">{event.title}</h3>
+
+                      <div className="space-y-1.5 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-primary" />
+                          <span>{event.date}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-primary" />
+                          <span>{event.location}, {event.state}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {event.description}
-                    </p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {event.description}
+                      </p>
 
-                    <div className="pt-2 flex items-center justify-between border-t border-border/60">
-                      <span className="text-xs font-semibold text-primary">{event.attendees}</span>
-                      <Button variant="hero" size="sm" asChild className="rounded-xl bg-primary text-xs">
-                        <Link to="/volunteer">Register to Attend</Link>
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                      <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                        <span className="text-xs font-semibold text-primary">{event.attendees}</span>
+                        <Button variant="hero" size="sm" asChild className="rounded-xl bg-primary text-xs">
+                          <Link to="/volunteer">Register to Attend</Link>
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="past" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {events.filter((e) => e.status === "Completed").map((event) => (
+                {eventsList.filter((e) => e.status === "Completed").map((event) => (
                   <Card key={event.id} className="rounded-3xl border-border p-6 space-y-4 bg-card opacity-90">
                     <div className="flex items-center justify-between">
                       <Badge variant="secondary" className="rounded-full text-xs">

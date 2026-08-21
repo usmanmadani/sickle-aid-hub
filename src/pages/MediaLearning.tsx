@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
   Mic, Play, Pause, Video, Search, UserCheck, Stethoscope, 
-  Share2, Clock, Sparkles, ExternalLink 
+  Share2, Clock, Sparkles, ExternalLink, Loader2 
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PodcastEpisode {
-  id: number;
+  id: string | number;
   title: string;
   host: string;
   guest: string;
@@ -25,7 +26,7 @@ interface PodcastEpisode {
 }
 
 interface Interview {
-  id: number;
+  id: string | number;
   expertName: string;
   role: "Doctor" | "Pharmacist" | "Researcher" | "Healthcare Professional";
   institution: string;
@@ -37,7 +38,7 @@ interface Interview {
 }
 
 interface EducationalVideo {
-  id: number;
+  id: string | number;
   title: string;
   category: "Genetics" | "Pain Management" | "Nutrition" | "Pregnancy" | "Pediatric Care";
   duration: string;
@@ -45,9 +46,9 @@ interface EducationalVideo {
   summary: string;
 }
 
-const podcastEpisodes: PodcastEpisode[] = [
+const defaultEpisodes: PodcastEpisode[] = [
   {
-    id: 1,
+    id: "def-1",
     title: "Episode 1: Understanding Genotype Compatibility & Premarital Screening",
     host: "Sickle Cell Talk",
     guest: "Dr. Fatima Abubakar",
@@ -59,7 +60,7 @@ const podcastEpisodes: PodcastEpisode[] = [
     youtubeId: "dQw4w9WgXcQ"
   },
   {
-    id: 2,
+    id: "def-2",
     title: "Episode 2: Navigating Pain Crises & Emergency Response at Home",
     host: "Sickle Cell Talk",
     guest: "Pharm. Chidimma Okeke",
@@ -71,7 +72,7 @@ const podcastEpisodes: PodcastEpisode[] = [
     youtubeId: "dQw4w9WgXcQ"
   },
   {
-    id: 3,
+    id: "def-3",
     title: "Episode 3: Nutrition, Hydration & Immune Boosters for SCD Warriors",
     host: "Sickle Cell Talk",
     guest: "Dr. Ibrahim Keffi",
@@ -84,9 +85,9 @@ const podcastEpisodes: PodcastEpisode[] = [
   }
 ];
 
-const expertInterviews: Interview[] = [
+const defaultInterviews: Interview[] = [
   {
-    id: 1,
+    id: "def-1",
     expertName: "Prof. Oladipo Bello",
     role: "Doctor",
     institution: "University College Hospital, Ibadan",
@@ -97,7 +98,7 @@ const expertInterviews: Interview[] = [
     summary: "An in-depth look into current clinical breakthroughs, accessibility of Hydroxyurea across Nigerian states, and emerging curative gene editing research."
   },
   {
-    id: 2,
+    id: "def-2",
     expertName: "Pharm. Zainab Yusuf",
     role: "Pharmacist",
     institution: "National Hospital Abuja",
@@ -108,7 +109,7 @@ const expertInterviews: Interview[] = [
     summary: "Pharm. Zainab discusses proper dosage schedules, managing minor side effects, and avoiding counterfeit medications in local pharmacies."
   },
   {
-    id: 3,
+    id: "def-3",
     expertName: "Dr. Amina Garba",
     role: "Researcher",
     institution: "Nigerian Institute of Medical Research (NIMR)",
@@ -120,7 +121,7 @@ const expertInterviews: Interview[] = [
   }
 ];
 
-const educationalVideos: EducationalVideo[] = [
+const defaultVideos: EducationalVideo[] = [
   {
     id: 1,
     title: "How Sickle Cell Gene Mutation Alters Red Blood Cell Shape",
@@ -136,29 +137,40 @@ const educationalVideos: EducationalVideo[] = [
     duration: "8 mins",
     youtubeId: "dQw4w9WgXcQ",
     summary: "Detailed medical explanation of plasma volume expansion and blood viscosity reduction."
-  },
-  {
-    id: 3,
-    title: "Pregnancy & Sickle Cell: Safe Maternal Protocols",
-    category: "Pregnancy",
-    duration: "12 mins",
-    youtubeId: "dQw4w9WgXcQ",
-    summary: "High-risk obstetric advice for pregnant women carrying AS or SS genotypes."
-  },
-  {
-    id: 4,
-    title: "Pediatric SCD Care: Guidelines for Parents & Teachers",
-    category: "Pediatric Care",
-    duration: "10 mins",
-    youtubeId: "dQw4w9WgXcQ",
-    summary: "Practical school guidelines, fever management, and recognizing spleen enlargement signs."
   }
 ];
 
 export default function MediaLearning() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activePodcast, setActivePodcast] = useState<PodcastEpisode | null>(podcastEpisodes[0]);
+  const [podcastList, setPodcastList] = useState<PodcastEpisode[]>(defaultEpisodes);
+  const [interviewList, setInterviewList] = useState<Interview[]>(defaultInterviews);
+  const [activePodcast, setActivePodcast] = useState<PodcastEpisode | null>(defaultEpisodes[0]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch dynamic podcast and media updates from Supabase
+  useEffect(() => {
+    async function fetchDynamicMedia() {
+      try {
+        const { data, error } = await supabase
+          .from("site_content")
+          .select("*")
+          .eq("key", "media_episodes");
+
+        if (error) throw error;
+
+        if (data && data.length > 0 && Array.isArray(data[0].value)) {
+          setPodcastList([...data[0].value, ...defaultEpisodes]);
+          setActivePodcast(data[0].value[0] || defaultEpisodes[0]);
+        }
+      } catch (err) {
+        console.warn("Dynamic media fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDynamicMedia();
+  }, []);
 
   return (
     <div className="min-h-screen pt-20 pb-20 bg-background text-foreground">
@@ -167,8 +179,8 @@ export default function MediaLearning() {
       <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/30 border-b">
         <div className="container mx-auto px-4 max-w-7xl text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-            <Tv className="w-4 h-4" />
-            <span>Multimedia Learning Centre</span>
+            <Video className="w-4 h-4" />
+            <span>Dynamic Multimedia Hub</span>
           </div>
           
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -281,7 +293,7 @@ export default function MediaLearning() {
               <h3 className="text-xl font-bold tracking-tight">All Episodes</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {podcastEpisodes.map((ep) => (
+                {podcastList.map((ep) => (
                   <Card 
                     key={ep.id} 
                     onClick={() => { setActivePodcast(ep); setIsPlaying(true); }}
@@ -321,7 +333,7 @@ export default function MediaLearning() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {expertInterviews.map((item) => (
+              {interviewList.map((item) => (
                 <Card key={item.id} className="rounded-2xl border-border overflow-hidden hover:shadow-lg transition-all flex flex-col">
                   <div className="relative aspect-video bg-muted overflow-hidden group">
                     <img 
@@ -369,7 +381,7 @@ export default function MediaLearning() {
           {/* Educational Videos Tab */}
           <TabsContent value="videos" className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {educationalVideos.map((video) => (
+              {defaultVideos.map((video) => (
                 <Card key={video.id} className="rounded-2xl border-border overflow-hidden hover:shadow-md transition-all">
                   <CardHeader className="p-6 pb-3">
                     <div className="flex items-center justify-between mb-2">

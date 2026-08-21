@@ -181,8 +181,8 @@ const Donate = () => {
                   <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Select Donation Tier
                   </Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[2000, 5000, 15000, 50000, 100000].map((amt) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[5000, 25000, 250000, 500000].map((amt) => (
                       <Button
                         key={amt}
                         type="button"
@@ -190,7 +190,7 @@ const Donate = () => {
                         onClick={() => handleAmountSelect(amt)}
                         className="h-12 rounded-xl text-sm font-bold"
                       >
-                        ₦{amt.toLocaleString()}
+                        ₦{amt >= 1000 ? `${amt / 1000}k` : amt}
                       </Button>
                     ))}
                   </div>
@@ -277,32 +277,32 @@ const Donate = () => {
               
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    ₦2k
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    ₦5k
                   </div>
                   <div>
                     <h4 className="font-bold text-sm">1 Genotype Screen</h4>
-                    <p className="text-xs text-muted-foreground">Provides a student or young adult with accurate laboratory genotype testing.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Provides a student or young adult with accurate laboratory genotype testing.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    ₦15k
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    ₦25k
                   </div>
                   <div>
                     <h4 className="font-bold text-sm">Crisis Relief Pack</h4>
-                    <p className="text-xs text-muted-foreground">Supplies 1 month of Hydroxyurea, folic acid, and emergency pain relief kits for a patient.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Supplies 1 month of Hydroxyurea, folic acid, and emergency pain relief kits for a patient.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    ₦50k
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    ₦250k
                   </div>
                   <div>
                     <h4 className="font-bold text-sm">School Outreach Sponsorship</h4>
-                    <p className="text-xs text-muted-foreground">Fully funds a secondary school awareness seminar & mass genotype screening drive.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Fully funds a secondary school awareness seminar & mass genotype screening drive.</p>
                   </div>
                 </div>
               </div>
@@ -315,10 +315,9 @@ const Donate = () => {
                 <h3 className="font-bold text-base">Direct Bank Transfer (Nigeria)</h3>
               </div>
               <div className="space-y-2 text-xs text-muted-foreground bg-card p-4 rounded-2xl border border-border">
-                <p><strong>Bank:</strong> Guaranty Trust Bank (GTBank)</p>
-                <p><strong>Account Name:</strong> Red Hope Initiative</p>
-                <p><strong>Account Number:</strong> 0123456789</p>
-                <p><strong>Swift Code:</strong> GTBIGLA</p>
+                <p><strong>Bank:</strong> First City Monument Bank (FCMB)</p>
+                <p><strong>Account Name:</strong> ZANNATECH INNOVATIONS LTD</p>
+                <p><strong>Account Number:</strong> 2009293129</p>
               </div>
               <p className="text-[11px] text-muted-foreground">
                 After transfer, please send proof of payment to <strong className="text-foreground">Redhopeinitiatives@gmail.com</strong>
