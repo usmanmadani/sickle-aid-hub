@@ -1,303 +1,382 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import StatCounter from "@/components/StatCounter";
-import { Users, Heart, Award, ArrowRight, Activity, Globe } from "lucide-react";
-import heroImage from "@/assets/hero-image.jpg";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { 
+  Heart, ArrowRight, Shield, Activity, MapPin, Calculator, BookOpen, 
+  Tv, MessageSquare, Users, Sparkles, Bot, CheckCircle2, UserCheck 
+} from "lucide-react";
+import RedBloodCellIllustration from "@/components/illustrations/RedBloodCellIllustration";
+import StatCounter from "@/components/StatCounter";
 
-const iconMap: any = {
-  Heart,
-  Users,
-  Award,
-  Activity,
-  Globe
-};
-
-const pageVariants = {
-  initial: { opacity: 0, x: -20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: 20 },
-};
-
-const Home = () => {
-  const [hero, setHero] = useState<any>(null);
-  const [mission, setMission] = useState<any>(null);
-  const [cta, setCta] = useState<any>(null);
-  const [stats, setStats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const { data: contentData } = await supabase.from('site_content').select('*');
-        const { data: statsData } = await supabase.from('impact_stats').select('*').order('order');
-
-        if (contentData) {
-          const heroContent = contentData.find(c => c.key === 'home_hero')?.value;
-          const missionContent = contentData.find(c => c.key === 'home_mission')?.value;
-          const ctaContent = contentData.find(c => c.key === 'home_cta')?.value;
-
-          setHero(heroContent);
-          setMission(missionContent);
-          setCta(ctaContent);
-        }
-
-        if (statsData) {
-          setStats(statsData);
-        }
-      } catch (error) {
-        console.error("Error loading content:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContent();
-  }, []);
-
-  const heroTitle = hero?.title || "Bringing Hope to Those Affected by Sickle Cell";
-  const heroSubtitle = hero?.subtitle || "We believe prevention starts with awareness. We believe patients deserve hope. ❤️";
-  const missionDesc = mission?.description || "Red Hope is dedicated to raising awareness about sickle cell disease and providing support to affected individuals and their families across Nigeria and beyond.";
-  const ctaTitle = cta?.title || "Join the Movement";
-  const ctaDesc = cta?.description || "Your support can save lives. WHETHER through donations, volunteering, or spreading awareness, every action counts.";
-
-  const defaultStats = [
-    { label: "Annual SCD Deaths Of Children Under 5 Years", count: 100000, suffix: "+", icon: "Heart", color: "primary" },
-    { label: "SCD Carriers", count: 50000000, suffix: "+", icon: "Users", color: "primary" },
-    { label: "Annual SCD Births", count: 150000, suffix: "+", icon: "Award", color: "primary" }
-  ];
-
-  const displayStats = stats.length > 0 ? stats : defaultStats;
-
+export default function Home() {
   return (
-    <motion.div
-      className="min-h-screen"
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={{ duration: 0.5 }}
-    >
+    <div className="min-h-screen bg-background text-foreground pt-20 overflow-x-hidden">
+      
       {/* Hero Section */}
-      <section className="relative min-h-screen pt-24 md:pt-32 pb-20 flex items-center justify-center overflow-hidden bg-muted/30">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="relative container mx-auto px-4 z-10">
-          <div className="max-w-3xl">
-            <motion.h1
-              className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              {heroTitle}
-            </motion.h1>
-            <motion.p
-              className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            >
-              {heroSubtitle}
-            </motion.p>
-            <motion.div
-              className="flex flex-wrap gap-4"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            >
-              <Button variant="pulse" size="lg" asChild>
-                <Link to="/donate">
-                  Donate Now <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/programs">Learn About Our Programs</Link>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Impact Stats Section */}
-      <section className="py-20 bg-background border-t border-border">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+      <section className="relative py-16 md:py-24 bg-gradient-to-b from-primary/5 via-background to-background">
+        <div className="container mx-auto px-4 max-w-7xl">
+          
+          {/* Partnership Header Badge */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center justify-center mb-6"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary">NATIONAL EMERGENCY!</h2>
-            <p className="text-2xl md:text-3xl font-bold text-foreground mb-8">
-              Nigeria is the Sickle Cell Disorder Capital of the World!
-            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-primary/20 shadow-sm text-xs font-semibold text-foreground">
+              <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+              <span>Red Hope Initiative</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground font-normal">Partner: ZannaTech Innovations Ltd</span>
+            </div>
           </motion.div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {displayStats.map((stat, index) => {
-              const IconComponent = iconMap[stat.icon || "Heart"] || Heart;
-              return (
-                <motion.div
-                  key={stat.id || index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <Card className="text-center border-none rounded-2xl shadow-[var(--shadow-card)] card-hover">
-                    <CardContent className="pt-8 pb-8">
-                      <motion.div
-                        className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        <IconComponent className="w-8 h-8 text-primary" />
-                      </motion.div>
-                      <div className="text-4xl font-bold text-primary mb-2">
-                        <StatCounter end={stat.count} suffix={stat.suffix} />
-                      </div>
-                      <p className="text-lg text-muted-foreground">{stat.label}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <Card className="max-w-md mx-auto border-2 border-primary">
-              <CardContent className="pt-8 pb-8">
-                <h3 className="text-3xl font-bold text-primary mb-2">25%</h3>
-                <p className="text-lg text-foreground">of Nigerians are AS</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Mission Section */}
-      <section className="py-20 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Hero Left Content */}
+            <motion.div 
               initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
+              className="lg:col-span-7 space-y-6 text-center lg:text-left"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
-              <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
-                {missionDesc}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+                Empowering Lives Through <span className="text-primary underline decoration-primary/30">Awareness</span>, Prevention & Support
+              </h1>
+
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
+                Sickle Aid Hub is a digital platform developed by Red Hope Initiative to provide 
+                sickle cell education, genotype awareness, patient support, and community engagement across Nigeria.
               </p>
-              <Button variant="default" size="lg" asChild>
-                <Link to="/about">
-                  Learn More About Us <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
+
+              {/* 4 Hero Action Buttons */}
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                <Button variant="hero" size="lg" asChild className="rounded-2xl bg-primary text-primary-foreground font-semibold px-6 shadow-md hover:shadow-lg">
+                  <Link to="/resources" className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Learn About Sickle Cell
+                  </Link>
+                </Button>
+
+                <Button variant="outline" size="lg" asChild className="rounded-2xl border-primary/30 font-semibold px-6">
+                  <Link to="/auth" className="flex items-center gap-2">
+                    <UserCheck className="w-4 h-4 text-primary" />
+                    Patient Login
+                  </Link>
+                </Button>
+
+                <Button variant="secondary" size="lg" asChild className="rounded-2xl font-semibold px-6">
+                  <Link to="/donate" className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary fill-primary" />
+                    Donate
+                  </Link>
+                </Button>
+
+                <Button variant="ghost" size="lg" asChild className="rounded-2xl font-semibold px-6 border border-border">
+                  <Link to="/volunteer" className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary" />
+                    Become a Volunteer
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Key Highlights Pills */}
+              <div className="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-muted-foreground font-medium">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Free Educational Hub
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Genotype Compatibility Tool
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Verified Testing Centers
+                </span>
+              </div>
             </motion.div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { title: "Education", desc: "Spreading awareness through workshops and community programs." },
-                { title: "Testing", desc: "Free genotype testing in communities nationwide." },
-                { title: "Support", desc: "Counseling and resources for affected families." },
-                { title: "Advocacy", desc: "Fighting for better healthcare policies and access." }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="p-6 rounded-2xl shadow-[var(--shadow-card)] card-hover border-l-4 border-l-primary">
-                    <h3 className="font-semibold text-lg mb-2 text-primary">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.desc}</p>
-                  </Card>
-                </motion.div>
-              ))}
+
+            {/* Hero Right Medical Illustration */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:col-span-5"
+            >
+              <RedBloodCellIllustration />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Counter Section */}
+      <section className="py-12 bg-secondary/50 border-y border-border">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="p-4">
+              <StatCounter end={15000} suffix="+" title="Individuals Screened" />
+            </div>
+            <div className="p-4">
+              <StatCounter end={50} suffix="+" title="Schools Reached" />
+            </div>
+            <div className="p-4">
+              <StatCounter end={120} suffix="+" title="Outreach Programs" />
+            </div>
+            <div className="p-4">
+              <StatCounter end={2500} suffix="+" title="Warriors Supported" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-20 bg-primary relative overflow-hidden">
-        <motion.div
-          className="absolute inset-0 opacity-10"
-          animate={{
-            backgroundPosition: ["0% 0%", "100% 100%"],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-          style={{
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "50px 50px",
-          }}
-        />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            {ctaTitle}
-          </motion.h2>
-          <motion.p
-            className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {ctaDesc}
-          </motion.p>
-          <motion.div
-            className="flex flex-wrap gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Button
-              variant="outline"
-              size="lg"
-              className="bg-background text-foreground border-2 border-background hover:bg-background/90 hover:scale-105 transition-all duration-300"
-              asChild
-            >
-              <Link to="/donate">Make a Donation</Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="bg-transparent text-primary-foreground border-2 border-primary-foreground hover:bg-primary-foreground/10 hover:scale-105 transition-all duration-300"
-              asChild
-            >
-              <Link to="/contact">Get Involved</Link>
-            </Button>
-          </motion.div>
+      {/* Core Ecosystem Pillars Grid */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-7xl">
+          
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary px-3 py-1 rounded-full bg-primary/10">
+              Digital Health Ecosystem
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Designed for Education, Prevention & Comprehensive Care
+            </h2>
+            <p className="text-muted-foreground text-base">
+              Sickle Aid Hub integrates interactive tools, verified medical guidance, multimedia learning, and a dedicated patient portal.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            {/* Compatibility Checker Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+                    <Calculator className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl">Genotype Compatibility</CardTitle>
+                  <CardDescription>
+                    Compare genotypes (AA, AS, AC, SS, SC) with Punnett squares and inheritance probability.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Get instant visual risk breakdowns and expert medical advice before family planning.
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full rounded-xl group">
+                    <Link to="/genotype-checker" className="flex items-center justify-between">
+                      <span>Check Compatibility</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-primary" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Find Testing Center Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-3">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl">Find Testing Centres</CardTitle>
+                  <CardDescription>
+                    Search verified hospitals, diagnostic labs, and partner testing centers across Nigeria.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Filter by State and City to get addresses, operating hours, contacts, and directions.
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full rounded-xl group">
+                    <Link to="/testing-centers" className="flex items-center justify-between">
+                      <span>Locate Nearest Centre</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-emerald-600" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Educational Hub Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-3">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl">Educational Resources</CardTitle>
+                  <CardDescription>
+                    Curated articles, infographics, FAQs, and guides on genetics, nutrition, and pain management.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Available in multiple languages including English, Hausa, Yoruba, and Igbo.
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full rounded-xl group">
+                    <Link to="/resources" className="flex items-center justify-between">
+                      <span>Explore Knowledge Base</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-blue-600" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Media & Podcast Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-3">
+                    <Tv className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl">Media & Learning</CardTitle>
+                  <CardDescription>
+                    "Sickle Cell Talk" podcast, medical expert interviews, and educational video library.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Watch interviews with hematologists, researchers, pharmacists, and advocates.
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full rounded-xl group">
+                    <Link to="/media" className="flex items-center justify-between">
+                      <span>Listen & Watch</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-purple-600" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Pain Has A Voice Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-3">
+                    <MessageSquare className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl">Pain Has A Voice</CardTitle>
+                  <CardDescription>
+                    Real warrior stories on living with SCD, school, career, family, and hope.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Read inspiring experiences or share your own journey (with anonymous submission option).
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full rounded-xl group">
+                    <Link to="/stories" className="flex items-center justify-between">
+                      <span>Read Patient Stories</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-600" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Patient Hub Feature Card */}
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card className="h-full rounded-2xl border-primary/30 bg-primary/5 shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground mb-3">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    Patient Hub <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">Auth Required</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Track hydration, pain logs, medications, emergency cards, health reports & AI Assistant.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Exclusive personal dashboard for registered warriors to manage daily health.
+                  </p>
+                  <Button variant="hero" size="sm" asChild className="w-full rounded-xl group bg-primary">
+                    <Link to="/dashboard" className="flex items-center justify-between">
+                      <span>Enter Patient Hub</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+          </div>
         </div>
       </section>
-    </motion.div>
-  );
-};
 
-export default Home;
+      {/* SickleAid AI Feature Showcase Banner */}
+      <section className="py-16 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div className="lg:col-span-8 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary-foreground text-xs font-semibold">
+                <Bot className="w-4 h-4 text-primary" />
+                <span>Patient Exclusive Feature</span>
+              </div>
+
+              <h3 className="text-3xl font-bold tracking-tight text-white">
+                Meet SickleAid AI — Your Digital Health Companion
+              </h3>
+
+              <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl">
+                Integrated into the Patient Hub, SickleAid AI helps logged-in patients understand 
+                medications, analyze hydration trends, track pain triggers, suggest healthy lifestyle habits, 
+                and navigate platform features with ease.
+              </p>
+
+              <div className="text-xs text-slate-400 bg-slate-800/80 p-3 rounded-xl border border-slate-700 max-w-2xl">
+                ⚠️ <strong>Medical Disclaimer:</strong> SickleAid AI provides educational & self-management support. 
+                It does not diagnose conditions or prescribe treatment. Always consult qualified doctors for medical care.
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 flex justify-center">
+              <Button variant="hero" size="lg" asChild className="rounded-2xl bg-primary text-primary-foreground text-base px-8 py-6 shadow-xl">
+                <Link to="/dashboard" className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Try SickleAid AI
+                </Link>
+              </Button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Banner */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/30">
+        <div className="container mx-auto px-4 max-w-4xl text-center space-y-6">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Together, We Can End the Sickle Cell Pain Cycle
+          </h2>
+          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+            Whether you want to test your genotype, support an outreach program, donate to assist patients in pain crisis, 
+            or volunteer as a Campus Ambassador — every action creates real impact.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <Button variant="hero" size="lg" asChild className="rounded-2xl bg-primary px-8">
+              <Link to="/donate" className="flex items-center gap-2">
+                <Heart className="w-5 h-5 fill-current" />
+                Support Our Mission
+              </Link>
+            </Button>
+
+            <Button variant="outline" size="lg" asChild className="rounded-2xl px-8">
+              <Link to="/volunteer">
+                Become a Volunteer
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}

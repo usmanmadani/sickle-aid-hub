@@ -2,353 +2,314 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Video, HelpCircle, Search, Share2, Globe } from "lucide-react";
+import { BookOpen, Video, HelpCircle, Search, Share2, Globe, Clock, User, Calendar, ExternalLink, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
-interface Resource {
+interface Article {
   id: number;
   title: string;
+  category: string;
   description: string;
-  category: "article" | "video" | "faq";
-  readTime?: string;
-  duration?: string;
+  content: string;
+  readTime: string;
+  author: string;
+  publishDate: string;
   tags: string[];
-  language: string[];
 }
 
-const resources: Resource[] = [
+const articlesData: Article[] = [
   {
     id: 1,
-    title: "Understanding Sickle Cell Disease: The Basics",
-    description: "A comprehensive guide to understanding what sickle cell disease is, its causes, and how it affects the body.",
-    category: "article",
-    readTime: "5 min read",
-    tags: ["Basics", "Education"],
-    language: ["English", "Hausa"],
-  },
-  {
-    id: 2,
-    title: "Genotype Testing: What You Need to Know",
-    description: "Learn about the importance of genotype testing, when to get tested, and how to interpret results.",
-    category: "article",
-    readTime: "7 min read",
-    tags: ["Testing", "Prevention"],
-    language: ["English", "Yoruba"],
-  },
-  {
-    id: 3,
-    title: "Living with Sickle Cell: A Day in the Life",
-    description: "Watch how individuals with sickle cell disease manage their daily lives and maintain their health.",
-    category: "video",
-    duration: "8:30",
-    tags: ["Stories", "Daily Life"],
-    language: ["English"],
-  },
-  {
-    id: 4,
-    title: "Nutrition Tips for Sickle Cell Warriors",
-    description: "Essential dietary guidelines and nutrition tips for managing sickle cell disease effectively.",
-    category: "article",
+    title: "Understanding Sickle Cell Disease: The Biological Foundations",
+    category: "Understanding Sickle Cell Disease",
+    description: "A comprehensive guide to understanding hemoglobin gene mutations, red blood cell sickling, and blood flow impact.",
+    content: "Sickle Cell Disease (SCD) is a group of inherited red blood cell disorders. In healthy individuals, red blood cells are round, flexible biconcave discs that move easily through blood vessels to deliver oxygen to tissues. In people with SCD, abnormal hemoglobin (HbS) forms hard, rigid rods when oxygen levels drop, distorting cells into a crescent or 'sickle' shape. These stiff cells can stick together and clog small blood vessels, leading to vaso-occlusive pain crises, organ damage, and chronic anemia.",
     readTime: "6 min read",
-    tags: ["Health", "Nutrition"],
-    language: ["English", "Igbo"],
-  },
-  {
-    id: 5,
-    title: "Understanding Genotype Compatibility",
-    description: "An animated explanation of how different genotypes interact and the risks involved in various combinations.",
-    category: "video",
-    duration: "5:15",
-    tags: ["Education", "Prevention"],
-    language: ["English", "Hausa"],
-  },
-];
-
-const faqs = [
-  {
-    id: 1,
-    question: "What is the difference between AS and SS genotype?",
-    answer: "AS means you're a carrier (sickle cell trait) - you have one normal hemoglobin gene and one sickle hemoglobin gene. You're usually healthy. SS means you have sickle cell disease - both genes are sickle hemoglobin genes, which causes the disease symptoms.",
+    author: "Dr. Fatima Abubakar",
+    publishDate: "Aug 12, 2026",
+    tags: ["Basics", "Biology", "Hemoglobin"]
   },
   {
     id: 2,
-    question: "Can two AS genotypes get married?",
-    answer: "While it's legally possible, it's not medically recommended without genetic counseling. There's a 25% chance with each pregnancy that the child will have sickle cell disease (SS), 50% chance of being a carrier (AS), and 25% chance of being normal (AA).",
+    title: "How Sickle Cell Disease is Inherited: Punnett Squares Made Simple",
+    category: "How Sickle Cell Disease is Inherited",
+    description: "Learn how parent genotype combinations pass down traits to offspring with exact percentages.",
+    content: "Sickle cell is an autosomal recessive genetic condition. This means a child must inherit two sickle cell genes (one from each parent) to have Sickle Cell Anemia (SS). If a child inherits one normal gene (A) and one sickle gene (S), they become a carrier (AS). AS carriers live normal lives and do not experience disease symptoms, but they can pass the S gene to their children.",
+    readTime: "7 min read",
+    author: "Dr. Ibrahim Keffi",
+    publishDate: "Aug 05, 2026",
+    tags: ["Genetics", "Inheritance", "Family Planning"]
   },
   {
     id: 3,
-    question: "How much does genotype testing cost in Nigeria?",
-    answer: "Genotype testing typically costs between ₦2,000 to ₦5,000 in most hospitals and diagnostic centers across Nigeria. Some government health centers offer it at subsidized rates or free during outreach programs.",
+    title: "Understanding Genotypes: AA, AS, AC, SC & SS Explained",
+    category: "Understanding Genotypes",
+    description: "A complete breakdown of all major hemoglobin genotypes found across West Africa.",
+    content: "Hemoglobin genotypes vary across human populations. AA represents normal adult hemoglobin. AS is sickle cell trait (carrier). AC is Hemoglobin C trait (carrier). SS is sickle cell anemia (severe). SC is Sickle Hemoglobin C disease (moderate to severe). SC disease occurs when a person inherits one S gene and one C gene.",
+    readTime: "5 min read",
+    author: "Pharm. Chidimma Okeke",
+    publishDate: "Jul 29, 2026",
+    tags: ["Genotypes", "Testing"]
   },
   {
     id: 4,
-    question: "At what age should children be tested?",
-    answer: "Children can be tested for their genotype at any age. However, it's recommended to test before starting school (around 3-5 years old) and definitely before marriage. Some hospitals offer newborn screening.",
+    title: "Pain Crisis Prevention & Emergency Management Protocols",
+    category: "Pain Crisis",
+    description: "First-line home protocols, hydration benchmarks, and recognizing severe warning signals.",
+    content: "A vaso-occlusive crisis occurs when sickled red blood cells block capillary blood flow, starving tissues of oxygen. Immediate triggers include cold exposure, dehydration, physical exertion, stress, and infections. First-line management involves aggressive oral hydration with warm water, rest in a warm environment, and prescribed pain relievers.",
+    readTime: "8 min read",
+    author: "Dr. Fatima Abubakar",
+    publishDate: "Jul 18, 2026",
+    tags: ["Pain Management", "Emergency", "Crisis"]
   },
   {
     id: 5,
-    question: "Is sickle cell disease curable?",
-    answer: "Currently, the only potential cure is a bone marrow transplant, which is expensive and not widely available in Nigeria. However, with proper medical care, pain management, and lifestyle adjustments, people with sickle cell disease can live full, productive lives.",
+    title: "Optimal Nutrition & Dietary Guidelines for SCD Warriors",
+    category: "Nutrition",
+    description: "Nutrient-dense Nigerian foods, folic acid supplementation, and immune-supporting diets.",
+    content: "Good nutrition plays a crucial role in maintaining high energy and supporting red blood cell turnover in warriors. Because sickled blood cells break down faster than normal cells (10-20 days vs 120 days), the bone marrow works constantly. Daily folic acid, zinc, magnesium, and antioxidant-rich foods like leafy greens, legumes, and citrus fruits are vital.",
+    readTime: "5 min read",
+    author: "Dr. Ibrahim Keffi",
+    publishDate: "Jul 10, 2026",
+    tags: ["Nutrition", "Folic Acid", "Diet"]
   },
   {
     id: 6,
-    question: "What triggers a sickle cell crisis?",
-    answer: "Common triggers include dehydration, extreme temperatures (cold or hot), stress, high altitude, infections, and overexertion. Each person may have different triggers, so it's important to know your own and avoid them.",
+    title: "Mental Health & Emotional Well-Being for Patients and Families",
+    category: "Mental Health",
+    description: "Coping mechanisms for chronic disease anxiety, pain-related distress, and peer support.",
+    content: "Living with a chronic pain condition like sickle cell can take an emotional toll on both patients and caregivers. Anxiety about unexpected pain crises, school or workplace absences, and social stigma are common. Joining support groups, practicing mindfulness, and open family communication build emotional resilience.",
+    readTime: "6 min read",
+    author: "Pharm. Zainab Yusuf",
+    publishDate: "Jun 28, 2026",
+    tags: ["Mental Health", "Wellness", "Support"]
   },
+  {
+    id: 7,
+    title: "Pregnancy & Sickle Cell: Safe Maternal Protocols",
+    category: "Pregnancy",
+    description: "Essential obstetric care for expectant mothers carrying AS, SC, or SS genotypes.",
+    content: "Pregnancy in women with sickle cell disease requires specialized multidisciplinary care involving hematologists and high-risk obstetricians. Frequent prenatal visits, prophylactic blood transfusions when necessary, folic acid supplementation, and strict hydration lower the risk of maternal and fetal complications.",
+    readTime: "7 min read",
+    author: "Prof. Oladipo Bello",
+    publishDate: "Jun 15, 2026",
+    tags: ["Pregnancy", "Maternal Care"]
+  },
+  {
+    id: 8,
+    title: "Busting Common Sickle Cell Myths vs Scientific Facts",
+    category: "Myths vs Facts",
+    description: "Debunking widespread cultural myths surrounding genotype compatibility and treatment.",
+    content: "Myth: 'AS carriers can get sickle cell crises.' Fact: False. AS carriers have enough normal hemoglobin to prevent sickling under normal conditions. Myth: 'Sickle cell is a spiritual curse.' Fact: False. SCD is a purely inherited genetic trait passed from parents to children.",
+    readTime: "4 min read",
+    author: "Red Hope Editorial Team",
+    publishDate: "Jun 02, 2026",
+    tags: ["Myths", "Facts", "Education"]
+  }
 ];
 
-const EducationalHub = () => {
+const categories = [
+  "All Categories",
+  "Understanding Sickle Cell Disease",
+  "How Sickle Cell Disease is Inherited",
+  "Understanding Genotypes",
+  "Pain Crisis",
+  "Nutrition",
+  "Mental Health",
+  "Pregnancy",
+  "Myths vs Facts",
+  "Frequently Asked Questions"
+];
+
+export default function EducationalHub() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
-  const filteredResources = resources.filter((resource) =>
-    resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    resource.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredArticles = articlesData.filter((article) => {
+    const matchesCategory = selectedCategory === "All Categories" || article.category === selectedCategory;
+    const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          article.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
-  const articles = filteredResources.filter((r) => r.category === "article");
-  const videos = filteredResources.filter((r) => r.category === "video");
+  const handleShare = (article: Article) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copied!",
+        description: `Article link for "${article.title}" copied to clipboard.`,
+      });
+    }
+  };
 
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <BookOpen className="w-16 h-16 text-primary mx-auto mb-6" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Educational Hub</h1>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-              Access comprehensive resources, articles, and videos about sickle cell disease, genotype awareness, and prevention strategies.
-            </p>
-            
-            {/* Language Selector */}
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <Globe className="w-5 h-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Available in:</span>
-              {["English", "Hausa", "Yoruba", "Igbo"].map((lang) => (
-                <Badge
-                  key={lang}
-                  variant={selectedLanguage === lang ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => setSelectedLanguage(lang)}
-                >
-                  {lang}
-                </Badge>
-              ))}
-            </div>
+    <div className="min-h-screen pt-20 pb-20 bg-background text-foreground">
+      
+      {/* Hero Header */}
+      <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/30 border-b">
+        <div className="container mx-auto px-4 max-w-7xl text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+            <BookOpen className="w-4 h-4" />
+            <span>Knowledge Centre</span>
           </div>
-        </div>
-      </section>
 
-      {/* Search Bar */}
-      <section className="py-8 bg-background border-b">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Search articles, videos, or topics..."
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+            Educational Resources & Medical Articles
+          </h1>
+
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto leading-relaxed">
+            Evidence-based medical articles, genetics guides, pain prevention protocols, and FAQs 
+            reviewed by hematologists and health experts.
+          </p>
+
+          {/* Search bar */}
+          <div className="max-w-xl mx-auto pt-4 relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              type="text" 
+              placeholder="Search by topic, keyword, or author..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12"
+              className="pl-11 h-12 rounded-2xl border-border shadow-sm"
             />
           </div>
         </div>
       </section>
 
-      {/* Content Tabs */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <Tabs defaultValue="all" className="max-w-6xl mx-auto">
-            <TabsList className="grid w-full grid-cols-4 mb-12">
-              <TabsTrigger value="all">All Resources</TabsTrigger>
-              <TabsTrigger value="articles">Articles</TabsTrigger>
-              <TabsTrigger value="videos">Videos</TabsTrigger>
-              <TabsTrigger value="faqs">FAQs</TabsTrigger>
-            </TabsList>
+      {/* Category Pills */}
+      <section className="py-6 container mx-auto px-4 max-w-7xl border-b">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {categories.map((cat) => (
+            <Button
+              key={cat}
+              variant={selectedCategory === cat ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(cat)}
+              className="rounded-full text-xs font-medium whitespace-nowrap"
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+      </section>
 
-            {/* All Resources */}
-            <TabsContent value="all" className="space-y-6">
-              {filteredResources.length === 0 ? (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <p className="text-muted-foreground">No resources found matching your search.</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                filteredResources.map((resource) => (
-                  <Card key={resource.id} className="hover:shadow-[var(--shadow-soft)] transition-all">
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            {resource.category === "article" ? (
-                              <BookOpen className="w-5 h-5 text-primary" />
-                            ) : (
-                              <Video className="w-5 h-5 text-accent" />
-                            )}
-                            <span className="text-xs text-muted-foreground uppercase">
-                              {resource.category}
-                            </span>
-                          </div>
-                          <CardTitle className="text-xl mb-2">{resource.title}</CardTitle>
-                          <CardDescription>{resource.description}</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div className="flex items-center gap-4 flex-wrap">
-                          {resource.readTime && (
-                            <span className="text-sm text-muted-foreground">{resource.readTime}</span>
-                          )}
-                          {resource.duration && (
-                            <span className="text-sm text-muted-foreground">⏱️ {resource.duration}</span>
-                          )}
-                          <div className="flex gap-2">
-                            {resource.tags.map((tag) => (
-                              <Badge key={tag} variant="secondary">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            Read More
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Share2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </TabsContent>
+      {/* Articles Grid */}
+      <section className="py-12 container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredArticles.map((article) => (
+            <Card key={article.id} className="rounded-3xl border-border hover:border-primary/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+              
+              <CardHeader className="p-6 pb-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Badge variant="secondary" className="rounded-full text-[11px] font-semibold">
+                    {article.category}
+                  </Badge>
+                  <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {article.readTime}
+                  </span>
+                </div>
 
-            {/* Articles */}
-            <TabsContent value="articles" className="space-y-6">
-              {articles.map((resource) => (
-                <Card key={resource.id} className="hover:shadow-[var(--shadow-soft)] transition-all">
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-5 h-5 text-primary" />
-                      <span className="text-xs text-muted-foreground uppercase">Article</span>
-                    </div>
-                    <CardTitle className="text-xl mb-2">{resource.title}</CardTitle>
-                    <CardDescription>{resource.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground">{resource.readTime}</span>
-                        <div className="flex gap-2">
-                          {resource.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          Read Article
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Share2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </TabsContent>
+                <CardTitle className="text-xl leading-snug line-clamp-2">
+                  {article.title}
+                </CardTitle>
 
-            {/* Videos */}
-            <TabsContent value="videos" className="space-y-6">
-              {videos.map((resource) => (
-                <Card key={resource.id} className="hover:shadow-[var(--shadow-soft)] transition-all">
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Video className="w-5 h-5 text-accent" />
-                      <span className="text-xs text-muted-foreground uppercase">Video</span>
-                    </div>
-                    <CardTitle className="text-xl mb-2">{resource.title}</CardTitle>
-                    <CardDescription>{resource.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground">⏱️ {resource.duration}</span>
-                        <div className="flex gap-2">
-                          {resource.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          Watch Video
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Share2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </TabsContent>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                  <User className="w-3.5 h-3.5 text-primary" />
+                  <span>{article.author}</span>
+                  <span>•</span>
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>{article.publishDate}</span>
+                </div>
+              </CardHeader>
 
-            {/* FAQs */}
-            <TabsContent value="faqs" className="space-y-6">
-              <div className="text-center mb-8">
-                <HelpCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h2 className="text-2xl font-bold mb-2">Frequently Asked Questions</h2>
-                <p className="text-muted-foreground">
-                  Find answers to common questions about sickle cell disease and genotype testing
+              <CardContent className="p-6 pt-0 space-y-4">
+                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                  {article.description}
                 </p>
+
+                <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setSelectedArticle(article)}
+                    className="rounded-full text-xs"
+                  >
+                    Read Article
+                  </Button>
+
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleShare(article)}
+                    className="rounded-full"
+                    title="Share article link"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Article Detail View Modal */}
+      {selectedArticle && (
+        <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
+          <DialogContent className="sm:max-w-3xl rounded-3xl p-8 max-h-[85vh] overflow-y-auto">
+            <DialogHeader className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="rounded-full text-xs">
+                  {selectedArticle.category}
+                </Badge>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" /> {selectedArticle.readTime}
+                </span>
               </div>
 
-              {faqs.map((faq) => (
-                <Card key={faq.id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">{faq.question}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{faq.answer}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
+              <DialogTitle className="text-2xl md:text-3xl font-extrabold leading-tight">
+                {selectedArticle.title}
+              </DialogTitle>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto text-center border-2 border-primary/20">
-            <CardContent className="pt-8 pb-8">
-              <h3 className="text-2xl font-bold mb-4">Can't Find What You're Looking For?</h3>
-              <p className="text-muted-foreground mb-6">
-                Our team is here to help answer your questions and provide additional resources.
+              <DialogDescription className="text-xs text-muted-foreground flex items-center gap-3">
+                <span>Written by <strong>{selectedArticle.author}</strong></span>
+                <span>•</span>
+                <span>Published {selectedArticle.publishDate}</span>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-6 space-y-4 text-sm leading-relaxed text-foreground border-y border-border/60">
+              <p className="font-semibold text-base text-primary leading-snug">
+                {selectedArticle.description}
               </p>
-              <Button variant="hero" size="lg">
-                Contact Us
+              <p className="whitespace-pre-line">{selectedArticle.content}</p>
+            </div>
+
+            <div className="pt-4 flex items-center justify-between">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleShare(selectedArticle)}
+                className="rounded-full gap-2 text-xs"
+              >
+                <Share2 className="w-4 h-4" /> Share Article
               </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+
+              <Button variant="default" size="sm" onClick={() => setSelectedArticle(null)} className="rounded-xl">
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
-};
-
-export default EducationalHub;
+}

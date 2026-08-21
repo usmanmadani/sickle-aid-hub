@@ -9,41 +9,41 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Brand Red - Bright, emotional */
-    --primary: 1 92% 49%;
+    /* Deep Red #C1121F */
+    --primary: 356 83% 41%;
     --primary-foreground: 0 0% 100%;
     
-    /* Soft Beige/Peach - Warm, comforting */
-    --secondary: 33 56% 84%;
-    --secondary-foreground: 0 0% 0%;
+    /* Soft Slate / Light Grey Contrast */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 33 56% 94%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 33 56% 84%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 356 83% 96%;
+    --accent-foreground: 356 83% 41%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 33 56% 88%;
-    --input: 33 56% 88%;
-    --ring: 1 92% 49%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 356 83% 41%;
 
     --radius: 1rem;
     
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(1 92% 49% / 0.1);
-    --shadow-glow: 0 0 40px hsl(1 92% 49% / 0.25);
-    --shadow-card: 0 2px 10px -2px hsl(0 0% 0% / 0.08);
+    /* Soft Shadows */
+    --shadow-soft: 0 4px 20px -2px rgba(193, 18, 31, 0.08);
+    --shadow-glow: 0 0 35px rgba(193, 18, 31, 0.2);
+    --shadow-card: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -51,37 +51,37 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 0 0% 98%;
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 98%;
+    --card: 224 71% 7%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 224 71% 7%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 1 92% 55%;
+    --primary: 356 83% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 33 56% 75%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
 
-    --accent: 33 56% 75%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 356 83% 20%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 1 92% 55%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 356 83% 50%;
     
-    --shadow-soft: 0 4px 20px -2px hsl(1 92% 55% / 0.2);
-    --shadow-glow: 0 0 40px hsl(1 92% 55% / 0.3);
-    --shadow-card: 0 2px 10px -2px hsl(0 0% 0% / 0.2);
+    --shadow-soft: 0 4px 20px -2px rgba(193, 18, 31, 0.25);
+    --shadow-glow: 0 0 40px rgba(193, 18, 31, 0.35);
+    --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
   }
 }
 

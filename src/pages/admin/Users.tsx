@@ -9,7 +9,6 @@ import { Loader2, Users, Download } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import * as XLSX from 'xlsx';
 import { useToast } from '@/hooks/use-toast';
 
 type PlatformUser = {
@@ -72,25 +71,28 @@ const AdminUsers = () => {
   );
 
   const handleExport = () => {
-    const rows = filtered.map((u, i) => ({
-      '#': i + 1,
-      Name: u.name,
-      Email: u.email,
-      Genotype: u.genotype || '',
-      Location: u.location || '',
-      Type: u.is_test ? 'Test' : 'Real',
-      'Joined At': new Date(u.created_at).toLocaleString(),
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [
-      { wch: 5 }, { wch: 24 }, { wch: 34 }, { wch: 10 },
-      { wch: 16 }, { wch: 8 }, { wch: 22 },
-    ];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+    const headers = ['#', 'Name', 'Email', 'Genotype', 'Location', 'Type', 'Joined At'];
+    const rows = filtered.map((u, i) => [
+      i + 1,
+      `"${u.name.replace(/"/g, '""')}"`,
+      `"${u.email.replace(/"/g, '""')}"`,
+      `"${u.genotype || ''}"`,
+      `"${(u.location || '').replace(/"/g, '""')}"`,
+      u.is_test ? 'Test' : 'Real',
+      `"${new Date(u.created_at).toLocaleString()}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
     const stamp = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `red-hope-users-${stamp}.xlsx`);
-    toast({ title: 'Exported', description: `Downloaded ${rows.length} users as Excel.` });
+    link.setAttribute('download', `red-hope-users-${stamp}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({ title: 'Exported', description: `Downloaded ${rows.length} users as CSV/Excel.` });
   };
 
   return (
