@@ -74,25 +74,31 @@ const Footer = () => {
             <h3 className="font-semibold mb-4 text-foreground">Follow Us</h3>
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61582870881250"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Facebook"
+                aria-label="Red Hope Initiative on Facebook"
               >
                 <Facebook className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/_red_hope"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
-              </a>
-              <a
-                href="#"
-                className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
-                aria-label="Instagram"
+                aria-label="Red Hope Initiative on Instagram"
               >
                 <Instagram className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/red-hope-initiatives/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-background border border-border hover:border-primary hover:shadow-[var(--shadow-soft)] transition-all"
+                aria-label="Red Hope Initiative on LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
             </div>
           </div>
