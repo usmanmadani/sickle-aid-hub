@@ -332,6 +332,54 @@ export type Database = {
         }
         Relationships: []
       }
+      testing_centers: {
+        Row: {
+          active: boolean
+          address: string
+          created_at: string
+          hours: string | null
+          id: string
+          lga: string | null
+          map_url: string | null
+          name: string
+          order: number
+          phone: string | null
+          services: string[]
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address: string
+          created_at?: string
+          hours?: string | null
+          id?: string
+          lga?: string | null
+          map_url?: string | null
+          name: string
+          order?: number
+          phone?: string | null
+          services?: string[]
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          created_at?: string
+          hours?: string | null
+          id?: string
+          lga?: string | null
+          map_url?: string | null
+          name?: string
+          order?: number
+          phone?: string | null
+          services?: string[]
+          state?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
