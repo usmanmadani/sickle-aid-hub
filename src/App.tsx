@@ -27,6 +27,7 @@ import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
 import AdminContacts from "./pages/admin/Contacts";
 import ContentManager from "./pages/admin/ContentManager";
+import AdminTestingCenters from "./pages/admin/TestingCenters";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="content" element={<ContentManager />} />
               <Route path="blog-posts" element={<BlogPosts />} />
               <Route path="programs" element={<AdminPrograms />} />
+            <Route path="testing-centers" element={<AdminTestingCenters />} />
               <Route path="donations" element={<AdminDonations />} />
               <Route path="contacts" element={<AdminContacts />} />
             </Route>

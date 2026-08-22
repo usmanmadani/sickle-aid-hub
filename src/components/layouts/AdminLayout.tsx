@@ -20,6 +20,7 @@ import {
   LogOut,
   Settings,
   Users,
+  MapPin,
 } from "lucide-react";
 import { useLocation, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -70,6 +71,11 @@ export default function AdminLayout() {
       title: "Programs",
       url: "/admin/programs",
       icon: Calendar,
+    },
+    {
+      title: "Testing Centers",
+      url: "/admin/testing-centers",
+      icon: MapPin,
     },
     {
       title: "Donations",
