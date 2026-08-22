@@ -5,9 +5,10 @@ interface StatCounterProps {
   duration?: number;
   suffix?: string;
   prefix?: string;
+  title?: string;
 }
 
-const StatCounter = ({ end, duration = 2000, suffix = "", prefix = "" }: StatCounterProps) => {
+const StatCounter = ({ end, duration = 2000, suffix = "", prefix = "", title }: StatCounterProps) => {
   const [count, setCount] = useState(0);
   const countRef = useRef<HTMLSpanElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -58,11 +59,14 @@ const StatCounter = ({ end, duration = 2000, suffix = "", prefix = "" }: StatCou
   }, [isVisible, end, duration]);
 
   return (
-    <span ref={countRef} className="animate-counter">
-      {prefix}
-      {count.toLocaleString()}
-      {suffix}
-    </span>
+    <div>
+      <span ref={countRef} className="animate-counter block text-3xl md:text-4xl font-bold text-primary">
+        {prefix}
+        {count.toLocaleString()}
+        {suffix}
+      </span>
+      {title && <span className="mt-1 block text-sm text-muted-foreground">{title}</span>}
+    </div>
   );
 };
 

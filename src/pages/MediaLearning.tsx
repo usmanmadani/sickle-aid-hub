@@ -160,8 +160,8 @@ export default function MediaLearning() {
         if (error) throw error;
 
         if (data && data.length > 0 && Array.isArray(data[0].value)) {
-          setPodcastList([...data[0].value, ...defaultEpisodes]);
-          setActivePodcast(data[0].value[0] || defaultEpisodes[0]);
+          setPodcastList([...(data[0].value as unknown as PodcastEpisode[]), ...defaultEpisodes]);
+          setActivePodcast(((data[0].value as unknown as PodcastEpisode[])[0]) || defaultEpisodes[0]);
         }
       } catch (err) {
         console.warn("Dynamic media fetch error:", err);
