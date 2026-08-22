@@ -20,6 +20,7 @@ import {
   LogOut,
   Settings,
   Users,
+  MapPin,
 } from "lucide-react";
 import { useLocation, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
