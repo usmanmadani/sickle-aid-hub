@@ -72,6 +72,11 @@ export default function AdminLayout() {
       icon: Calendar,
     },
     {
+      title: "Testing Centers",
+      url: "/admin/testing-centers",
+      icon: MapPin,
+    },
+    {
       title: "Donations",
       url: "/admin/donations",
       icon: DollarSign,
