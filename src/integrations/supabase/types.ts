@@ -107,6 +107,48 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          published: boolean
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          published?: boolean
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          published?: boolean
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_images: {
         Row: {
           category: string | null
@@ -223,6 +265,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string
           created_at: string
           email: string | null
           full_name: string | null
@@ -230,6 +273,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_type?: string
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -237,6 +281,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_type?: string
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -398,6 +443,54 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      volunteer_applications: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          institution: string | null
+          phone: string
+          reason: string | null
+          role: string
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          institution?: string | null
+          phone: string
+          reason?: string | null
+          role?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          institution?: string | null
+          phone?: string
+          reason?: string | null
+          role?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
