@@ -1,7 +1,19 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, GraduationCap, HeartPulse, Stethoscope, BookOpen } from "lucide-react";
+import { Calendar, Users, GraduationCap, HeartPulse, Stethoscope, BookOpen, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+type EventRow = {
+  id: string;
+  title: string;
+  description: string;
+  location: string | null;
+  starts_at: string;
+  category: string | null;
+};
+
 
 const Programs = () => {
   const programs = [
