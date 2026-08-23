@@ -63,23 +63,17 @@ const Programs = () => {
     },
   ];
 
-  const upcomingEvents = [
-    {
-      date: "March 15, 2025",
-      title: "Community Health Fair - Lagos",
-      description: "Free genotype testing and health screening",
-    },
-    {
-      date: "April 2, 2025",
-      title: "Awareness Walk - Abuja",
-      description: "Join us for a 5km walk to raise awareness",
-    },
-    {
-      date: "April 20, 2025",
-      title: "Educational Workshop - Kano",
-      description: "Workshop on sickle cell management in Hausa",
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState<EventRow[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("events")
+      .select("id,title,description,location,starts_at,category")
+      .eq("published", true)
+      .order("starts_at", { ascending: true })
+      .then(({ data }) => setUpcomingEvents((data as EventRow[]) ?? []));
+  }, []);
+
 
   return (
     <div className="min-h-screen pt-20">
