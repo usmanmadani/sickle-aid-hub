@@ -1,7 +1,19 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, GraduationCap, HeartPulse, Stethoscope, BookOpen } from "lucide-react";
+import { Calendar, Users, GraduationCap, HeartPulse, Stethoscope, BookOpen, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+type EventRow = {
+  id: string;
+  title: string;
+  description: string;
+  location: string | null;
+  starts_at: string;
+  category: string | null;
+};
+
 
 const Programs = () => {
   const programs = [
@@ -51,23 +63,17 @@ const Programs = () => {
     },
   ];
 
-  const upcomingEvents = [
-    {
-      date: "March 15, 2025",
-      title: "Community Health Fair - Lagos",
-      description: "Free genotype testing and health screening",
-    },
-    {
-      date: "April 2, 2025",
-      title: "Awareness Walk - Abuja",
-      description: "Join us for a 5km walk to raise awareness",
-    },
-    {
-      date: "April 20, 2025",
-      title: "Educational Workshop - Kano",
-      description: "Workshop on sickle cell management in Hausa",
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState<EventRow[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("events")
+      .select("id,title,description,location,starts_at,category")
+      .eq("published", true)
+      .order("starts_at", { ascending: true })
+      .then(({ data }) => setUpcomingEvents((data as EventRow[]) ?? []));
+  }, []);
+
 
   return (
     <div className="min-h-screen pt-20">
@@ -129,12 +135,27 @@ const Programs = () => {
           </div>
 
           <div className="max-w-4xl mx-auto space-y-6">
-            {upcomingEvents.map((event, index) => (
-              <Card key={index} className="border-l-4 border-l-primary hover:shadow-[var(--shadow-soft)] transition-all">
+            {upcomingEvents.length === 0 && (
+              <p className="text-center text-muted-foreground">
+                No events scheduled right now. Please check back soon.
+              </p>
+            )}
+            {upcomingEvents.map((event) => (
+              <Card key={event.id} className="border-l-4 border-l-primary hover:shadow-[var(--shadow-soft)] transition-all">
                 <CardContent className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-6">
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-primary mb-2">{event.date}</div>
+                    <div className="text-sm font-semibold text-primary mb-2">
+                      {new Date(event.starts_at).toLocaleString(undefined, {
+                        dateStyle: "long",
+                        timeStyle: "short",
+                      })}
+                    </div>
                     <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                    {event.location && (
+                      <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                        <MapPin className="w-3.5 h-3.5" /> {event.location}
+                      </p>
+                    )}
                     <p className="text-muted-foreground">{event.description}</p>
                   </div>
                   <Button variant="outline" asChild>
@@ -144,6 +165,7 @@ const Programs = () => {
               </Card>
             ))}
           </div>
+
         </div>
       </section>
 
