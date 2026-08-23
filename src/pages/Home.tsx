@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Heart, ArrowRight, Shield, Activity, MapPin, Calculator, BookOpen, 
-  Tv, MessageSquare, Users, Sparkles, Bot, CheckCircle2, UserCheck, Flame 
+  Tv, MessageSquare, Users, Sparkles, Bot, CheckCircle2, UserCheck, Flame, Award 
 } from "lucide-react";
 import RedBloodCellIllustration from "@/components/illustrations/RedBloodCellIllustration";
 import FloatingParticles from "@/components/illustrations/FloatingParticles";
@@ -128,23 +128,123 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Impact Counter Section with Motion Graphics */}
-      <section className="py-12 bg-secondary/50 border-y border-border relative z-10">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} viewport={{ once: true }} className="p-4">
-              <StatCounter end={15000} suffix="+" title="Individuals Screened" />
+      {/* High-Impact Statistics Section with Motion Graphics & Icon Illustrations */}
+      <section className="py-16 bg-gradient-to-b from-secondary/40 via-background to-secondary/30 border-y border-border relative overflow-hidden z-10">
+        {/* Ambient Motion Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-4 max-w-6xl relative z-10 space-y-12">
+          
+          {/* Top 3 Impact Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-stretch">
+            
+            {/* Stat 1: 100,000+ Annual SCD Deaths Of Children Under 5 Years */}
+            <motion.div 
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="p-8 rounded-3xl bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-between space-y-5 group"
+            >
+              <div className="relative">
+                <motion.div 
+                  animate={{ scale: [1, 1.1, 1] }} 
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/70 flex items-center justify-center text-primary shadow-inner group-hover:bg-primary group-hover:text-white transition-colors duration-300"
+                >
+                  <Heart className="w-8 h-8 stroke-[2.2]" />
+                </motion.div>
+                <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping opacity-25" />
+              </div>
+
+              <div className="space-y-2">
+                <StatCounter end={100000} suffix="+" />
+                <p className="text-sm sm:text-base font-semibold text-muted-foreground max-w-[220px] mx-auto leading-snug">
+                  Annual SCD Deaths Of Children Under 5 Years
+                </p>
+              </div>
             </motion.div>
-            <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-4">
-              <StatCounter end={50} suffix="+" title="Schools Reached" />
+
+            {/* Stat 2: 50,000,000+ SCD Carriers */}
+            <motion.div 
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="p-8 rounded-3xl bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-between space-y-5 group"
+            >
+              <div className="relative">
+                <motion.div 
+                  animate={{ y: [0, -4, 0] }} 
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/70 flex items-center justify-center text-primary shadow-inner group-hover:bg-primary group-hover:text-white transition-colors duration-300"
+                >
+                  <Users className="w-8 h-8 stroke-[2.2]" />
+                </motion.div>
+              </div>
+
+              <div className="space-y-2">
+                <StatCounter end={50000000} suffix="+" />
+                <p className="text-sm sm:text-base font-semibold text-muted-foreground max-w-[220px] mx-auto leading-snug">
+                  SCD Carriers
+                </p>
+              </div>
             </motion.div>
-            <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="p-4">
-              <StatCounter end={120} suffix="+" title="Outreach Programs" />
+
+            {/* Stat 3: 150,000+ Annual SCD Births */}
+            <motion.div 
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="p-8 rounded-3xl bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-between space-y-5 group"
+            >
+              <div className="relative">
+                <motion.div 
+                  animate={{ rotate: [0, 6, -6, 0] }} 
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/70 flex items-center justify-center text-primary shadow-inner group-hover:bg-primary group-hover:text-white transition-colors duration-300"
+                >
+                  <Award className="w-8 h-8 stroke-[2.2]" />
+                </motion.div>
+              </div>
+
+              <div className="space-y-2">
+                <StatCounter end={150000} suffix="+" />
+                <p className="text-sm sm:text-base font-semibold text-muted-foreground max-w-[220px] mx-auto leading-snug">
+                  Annual SCD Births
+                </p>
+              </div>
             </motion.div>
-            <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="p-4">
-              <StatCounter end={2500} suffix="+" title="Warriors Supported" />
-            </motion.div>
+
           </div>
+
+          {/* Red Outlined Highlight Card: 25% of Nigerians are AS */}
+          <motion.div 
+            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.93 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            className="max-w-xl mx-auto rounded-[2.5rem] border-2 border-primary bg-card/90 backdrop-blur-md p-8 sm:p-10 text-center shadow-xl relative overflow-hidden group"
+          >
+            {/* Ambient background glow accents */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all" />
+
+            <div className="relative z-10 space-y-2">
+              <div className="text-5xl sm:text-6xl font-black text-primary tracking-tight">
+                <StatCounter end={25} suffix="%" />
+              </div>
+              <p className="text-lg sm:text-xl font-bold tracking-wide text-foreground">
+                of Nigerians are AS
+              </p>
+            </div>
+          </motion.div>
+
         </div>
       </section>
 
