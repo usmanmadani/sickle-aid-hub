@@ -107,6 +107,25 @@ const Auth = () => {
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
+                  <Label htmlFor="accountType">I am signing up as</Label>
+                  <select
+                    id="accountType"
+                    value={accountType}
+                    onChange={(e) => setAccountType(e.target.value)}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="patient">Patient / Warrior</option>
+                    <option value="volunteer">Volunteer</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground">
+                    Volunteers should apply through the volunteer form to be reviewed by our team.
+                  </p>
+                </div>
+              )}
+
+              {!isLogin && (
+
+                <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input
                     id="fullName"
