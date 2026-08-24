@@ -19,7 +19,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isVolunteer, signOut } = useAuth();
+  const hubPath = isVolunteer ? "/volunteer/dashboard" : "/dashboard";
+  const hubLabel = isVolunteer ? "Volunteer Hub" : "Patient Hub";
   const location = useLocation();
 
   useEffect(() => {
@@ -168,14 +170,14 @@ const Navigation = () => {
 
             {/* Patient Hub Button */}
             <Button
-              variant={isActive("/dashboard") ? "default" : "outline"}
+              variant={isActive(hubPath) ? "default" : "outline"}
               size="sm"
               asChild
               className="rounded-full text-xs font-semibold px-3 gap-1.5 border-primary/30"
             >
-              <Link to="/dashboard">
+              <Link to={hubPath}>
                 <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
-                Patient Hub
+                {hubLabel}
               </Link>
             </Button>
 
@@ -333,15 +335,15 @@ const Navigation = () => {
                 </div>
 
                 <Link
-                  to="/dashboard"
+                  to={hubPath}
                   onClick={() => setIsOpen(false)}
                   className={`px-3 py-2.5 text-sm font-medium rounded-xl flex items-center justify-between ${
-                    isActive("/dashboard") ? "text-primary bg-primary/10 font-semibold" : "text-muted-foreground hover:bg-secondary/60"
+                    isActive(hubPath) ? "text-primary bg-primary/10 font-semibold" : "text-muted-foreground hover:bg-secondary/60"
                   }`}
                 >
                   <span className="flex items-center gap-3">
                     <LayoutDashboard className="w-4 h-4 text-primary" />
-                    Patient Hub
+                    {hubLabel}
                   </span>
                   <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">
                     Auth Required

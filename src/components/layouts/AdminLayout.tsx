@@ -21,6 +21,8 @@ import {
   Settings,
   Users,
   MapPin,
+  HeartHandshake,
+  CalendarClock,
 } from "lucide-react";
 import { useLocation, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -76,6 +78,16 @@ export default function AdminLayout() {
       title: "Testing Centers",
       url: "/admin/testing-centers",
       icon: MapPin,
+    },
+    {
+      title: "Volunteers",
+      url: "/admin/volunteers",
+      icon: HeartHandshake,
+    },
+    {
+      title: "Events",
+      url: "/admin/events",
+      icon: CalendarClock,
     },
     {
       title: "Donations",
