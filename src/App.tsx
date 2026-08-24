@@ -22,12 +22,15 @@ import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import UserDashboard from "./pages/Dashboard";
+import VolunteerDashboard from "./pages/VolunteerDashboard";
 import BlogPosts from "./pages/admin/BlogPosts";
 import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
 import AdminContacts from "./pages/admin/Contacts";
 import ContentManager from "./pages/admin/ContentManager";
 import AdminTestingCenters from "./pages/admin/TestingCenters";
+import AdminVolunteers from "./pages/admin/Volunteers";
+import AdminEvents from "./pages/admin/Events";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
@@ -57,6 +60,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Route>
 
@@ -67,6 +71,8 @@ const App = () => (
               <Route path="blog-posts" element={<BlogPosts />} />
               <Route path="programs" element={<AdminPrograms />} />
             <Route path="testing-centers" element={<AdminTestingCenters />} />
+              <Route path="volunteers" element={<AdminVolunteers />} />
+              <Route path="events" element={<AdminEvents />} />
               <Route path="donations" element={<AdminDonations />} />
               <Route path="contacts" element={<AdminContacts />} />
             </Route>
