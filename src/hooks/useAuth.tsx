@@ -6,6 +6,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [accountType, setAccountType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export const useAuth = () => {
           }, 0);
         } else {
           setIsAdmin(false);
+          setAccountType(null);
           setLoading(false);
         }
       }
@@ -52,6 +54,13 @@ export const useAuth = () => {
         .maybeSingle();
 
       setIsAdmin(!!data && !error);
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('account_type')
+        .eq('id', userId)
+        .maybeSingle();
+      setAccountType(profile?.account_type ?? 'patient');
     } catch (error) {
       setIsAdmin(false);
     } finally {
@@ -63,5 +72,5 @@ export const useAuth = () => {
     await supabase.auth.signOut();
   };
 
-  return { user, session, isAdmin, loading, signOut };
+  return { user, session, isAdmin, accountType, isVolunteer: accountType === 'volunteer', loading, signOut };
 };
