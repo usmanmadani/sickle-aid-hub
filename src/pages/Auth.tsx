@@ -13,9 +13,28 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [accountType, setAccountType] = useState('patient');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const routeForUser = async (userId: string) => {
+    const { data: adminRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+    if (adminRole) return '/admin';
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('account_type')
+      .eq('id', userId)
+      .maybeSingle();
+
+    return profile?.account_type === 'volunteer' ? '/volunteer/dashboard' : '/dashboard';
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +42,7 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -34,14 +53,15 @@ const Auth = () => {
           title: 'Success',
           description: 'Logged in successfully!',
         });
-        navigate('/');
+        navigate(data.user ? await routeForUser(data.user.id) : '/');
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: fullName,
+              account_type: accountType,
             },
             emailRedirectTo: `${window.location.origin}/`,
           },
@@ -53,7 +73,7 @@ const Auth = () => {
           title: 'Success',
           description: 'Account created successfully!',
         });
-        navigate('/');
+        navigate(accountType === 'volunteer' ? '/volunteer/dashboard' : '/dashboard');
       }
     } catch (error: any) {
       toast({
@@ -65,6 +85,7 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-20">
