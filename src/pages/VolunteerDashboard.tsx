@@ -114,16 +114,29 @@ export default function VolunteerDashboard() {
   return (
     <div className="min-h-screen pt-24 pb-20 bg-background">
       <div className="container mx-auto px-4 max-w-5xl space-y-8">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-2 text-xs font-semibold text-primary">
-            <Users className="w-4 h-4" /> Volunteer Hub
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+        >
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+              <Users className="w-4 h-4" /> Volunteer Hub
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold mt-2">
+              Welcome, {application?.full_name || user.user_metadata?.full_name || "Volunteer"}
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Track your application and stay on top of upcoming Red Hope activities.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mt-2">
-            Welcome, {application?.full_name || user.user_metadata?.full_name || "Volunteer"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Track your application and stay on top of upcoming Red Hope activities.
-          </p>
+          {application?.status === "approved" && (
+            <Button asChild variant="outline" className="rounded-2xl shrink-0">
+              <Link to="/volunteer/profile">
+                <UserCog className="w-4 h-4 mr-2" /> Edit my profile
+              </Link>
+            </Button>
+          )}
         </motion.div>
 
         {application ? (
