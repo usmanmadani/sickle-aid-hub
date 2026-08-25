@@ -105,6 +105,80 @@ export default function VolunteerProfile() {
     }));
   };
 
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Image too large",
+        description: "Please choose an image under 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImage(reader.result as string);
+      setCropOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropped = async (blob: Blob) => {
+    if (!user) return;
+    setUploading(true);
+    const path = `${user.id}/avatar-${Date.now()}.jpg`;
+
+    const { error: upErr } = await supabase.storage
+      .from("volunteer-avatars")
+      .upload(path, blob, { contentType: "image/jpeg", upsert: true });
+
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Upload failed", description: upErr.message, variant: "destructive" });
+      return;
+    }
+
+    const { error: dbErr } = await supabase
+      .from("volunteer_profiles")
+      .upsert({ user_id: user.id, avatar_url: path }, { onConflict: "user_id" });
+
+    if (dbErr) {
+      setUploading(false);
+      toast({ title: "Could not save photo", description: dbErr.message, variant: "destructive" });
+      return;
+    }
+
+    if (avatarPath && avatarPath !== path) {
+      await supabase.storage.from("volunteer-avatars").remove([avatarPath]);
+    }
+    setAvatarPath(path);
+    setAvatarPreview(await signedUrl(path));
+    setUploading(false);
+    setCropOpen(false);
+    setRawImage(null);
+    toast({ title: "Photo updated", description: "Your profile photo has been saved." });
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    setUploading(true);
+    const { error } = await supabase
+      .from("volunteer_profiles")
+      .upsert({ user_id: user.id, avatar_url: null }, { onConflict: "user_id" });
+    if (error) {
+      setUploading(false);
+      toast({ title: "Could not remove photo", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (avatarPath) await supabase.storage.from("volunteer-avatars").remove([avatarPath]);
+    setAvatarPath(null);
+    setAvatarPreview(null);
+    setUploading(false);
+    toast({ title: "Photo removed" });
+  };
+
   const handleSave = async () => {
     if (!user) return;
     const parsed = profileSchema.safeParse(form);
