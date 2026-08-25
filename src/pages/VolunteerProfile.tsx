@@ -16,11 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, UserCog, ArrowLeft, Save, ShieldAlert } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AvatarCropDialog from "@/components/AvatarCropDialog";
+import {
+  Loader2,
+  UserCog,
+  ArrowLeft,
+  Save,
+  ShieldAlert,
+  Camera,
+  Trash2,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { NIGERIAN_STATES } from "@/lib/nigeria";
+import { signedUrl } from "@/lib/volunteerAvatar";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
