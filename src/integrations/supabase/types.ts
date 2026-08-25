@@ -498,6 +498,7 @@ export type Database = {
         Row: {
           availability_days: string[]
           availability_hours: string
+          avatar_url: string | null
           bio: string
           city: string | null
           created_at: string
@@ -510,6 +511,7 @@ export type Database = {
         Insert: {
           availability_days?: string[]
           availability_hours?: string
+          avatar_url?: string | null
           bio?: string
           city?: string | null
           created_at?: string
@@ -522,6 +524,7 @@ export type Database = {
         Update: {
           availability_days?: string[]
           availability_hours?: string
+          avatar_url?: string | null
           bio?: string
           city?: string | null
           created_at?: string
