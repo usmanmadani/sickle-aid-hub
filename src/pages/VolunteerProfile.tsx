@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { z } from "zod";
@@ -16,11 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, UserCog, ArrowLeft, Save, ShieldAlert } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AvatarCropDialog from "@/components/AvatarCropDialog";
+import {
+  Loader2,
+  UserCog,
+  ArrowLeft,
+  Save,
+  ShieldAlert,
+  Camera,
+  Trash2,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { NIGERIAN_STATES } from "@/lib/nigeria";
+import { signedUrl } from "@/lib/volunteerAvatar";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -48,6 +59,12 @@ export default function VolunteerProfile() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
+  const [avatarPath, setAvatarPath] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     bio: "",
     state: "",
@@ -82,6 +99,10 @@ export default function VolunteerProfile() {
       setStatus((appRes.data as any)?.status ?? null);
       setFullName((appRes.data as any)?.full_name ?? "");
 
+      const storedPath = (profRes.data as any)?.avatar_url ?? null;
+      setAvatarPath(storedPath);
+      setAvatarPreview(storedPath ? await signedUrl(storedPath) : null);
+
       const prof = profRes.data as any;
       setForm({
         bio: prof?.bio ?? "",
@@ -103,6 +124,80 @@ export default function VolunteerProfile() {
         ? f.availability_days.filter((d) => d !== day)
         : [...f.availability_days, day],
     }));
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Image too large",
+        description: "Please choose an image under 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImage(reader.result as string);
+      setCropOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropped = async (blob: Blob) => {
+    if (!user) return;
+    setUploading(true);
+    const path = `${user.id}/avatar-${Date.now()}.jpg`;
+
+    const { error: upErr } = await supabase.storage
+      .from("volunteer-avatars")
+      .upload(path, blob, { contentType: "image/jpeg", upsert: true });
+
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Upload failed", description: upErr.message, variant: "destructive" });
+      return;
+    }
+
+    const { error: dbErr } = await supabase
+      .from("volunteer_profiles")
+      .upsert({ user_id: user.id, avatar_url: path }, { onConflict: "user_id" });
+
+    if (dbErr) {
+      setUploading(false);
+      toast({ title: "Could not save photo", description: dbErr.message, variant: "destructive" });
+      return;
+    }
+
+    if (avatarPath && avatarPath !== path) {
+      await supabase.storage.from("volunteer-avatars").remove([avatarPath]);
+    }
+    setAvatarPath(path);
+    setAvatarPreview(await signedUrl(path));
+    setUploading(false);
+    setCropOpen(false);
+    setRawImage(null);
+    toast({ title: "Photo updated", description: "Your profile photo has been saved." });
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    setUploading(true);
+    const { error } = await supabase
+      .from("volunteer_profiles")
+      .upsert({ user_id: user.id, avatar_url: null }, { onConflict: "user_id" });
+    if (error) {
+      setUploading(false);
+      toast({ title: "Could not remove photo", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (avatarPath) await supabase.storage.from("volunteer-avatars").remove([avatarPath]);
+    setAvatarPath(null);
+    setAvatarPreview(null);
+    setUploading(false);
+    toast({ title: "Photo removed" });
   };
 
   const handleSave = async () => {
@@ -194,6 +289,69 @@ export default function VolunteerProfile() {
             Tell the Red Hope team about yourself and when you are available for outreach.
           </p>
         </motion.div>
+
+        <Card className="rounded-3xl border-border">
+          <CardHeader>
+            <CardTitle className="text-xl">Profile photo</CardTitle>
+            <CardDescription>
+              Upload a clear headshot — you can crop and zoom before saving.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row items-center gap-6">
+            <Avatar className="h-24 w-24 border border-border">
+              <AvatarImage src={avatarPreview ?? undefined} alt="Your profile photo" />
+              <AvatarFallback className="text-lg font-semibold">
+                {(fullName || "V").slice(0, 1).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-center sm:items-start gap-2">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4 mr-2" />
+                  )}
+                  {avatarPreview ? "Change photo" : "Upload photo"}
+                </Button>
+                {avatarPreview && (
+                  <Button
+                    variant="ghost"
+                    className="rounded-2xl text-destructive"
+                    onClick={handleRemoveAvatar}
+                    disabled={uploading}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Remove
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">JPG or PNG, up to 5MB.</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <AvatarCropDialog
+          open={cropOpen}
+          imageSrc={rawImage}
+          saving={uploading}
+          onClose={() => {
+            setCropOpen(false);
+            setRawImage(null);
+          }}
+          onCropped={handleCropped}
+        />
 
         <Card className="rounded-3xl border-border">
           <CardHeader>
