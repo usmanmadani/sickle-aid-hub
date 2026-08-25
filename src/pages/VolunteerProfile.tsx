@@ -197,6 +197,69 @@ export default function VolunteerProfile() {
 
         <Card className="rounded-3xl border-border">
           <CardHeader>
+            <CardTitle className="text-xl">Profile photo</CardTitle>
+            <CardDescription>
+              Upload a clear headshot — you can crop and zoom before saving.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row items-center gap-6">
+            <Avatar className="h-24 w-24 border border-border">
+              <AvatarImage src={avatarPreview ?? undefined} alt="Your profile photo" />
+              <AvatarFallback className="text-lg font-semibold">
+                {(fullName || "V").slice(0, 1).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-center sm:items-start gap-2">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4 mr-2" />
+                  )}
+                  {avatarPreview ? "Change photo" : "Upload photo"}
+                </Button>
+                {avatarPreview && (
+                  <Button
+                    variant="ghost"
+                    className="rounded-2xl text-destructive"
+                    onClick={handleRemoveAvatar}
+                    disabled={uploading}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Remove
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">JPG or PNG, up to 5MB.</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <AvatarCropDialog
+          open={cropOpen}
+          imageSrc={rawImage}
+          saving={uploading}
+          onClose={() => {
+            setCropOpen(false);
+            setRawImage(null);
+          }}
+          onCropped={handleCropped}
+        />
+
+        <Card className="rounded-3xl border-border">
+          <CardHeader>
             <CardTitle className="text-xl">About you</CardTitle>
             <CardDescription>
               A short bio helps coordinators match you with the right activities.
