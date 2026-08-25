@@ -140,6 +140,77 @@ export default function VolunteerDashboard() {
           )}
         </motion.div>
 
+        {application?.status === "approved" && (
+          <Card className="rounded-3xl border-border">
+            <CardHeader className="flex flex-row items-start justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl">My Profile</CardTitle>
+                <CardDescription>
+                  {profile?.updated_at
+                    ? `Last updated ${new Date(profile.updated_at).toLocaleString()}`
+                    : "Add your bio, skills, and availability so coordinators know you"}
+                </CardDescription>
+              </div>
+              <Avatar className="h-14 w-14 border border-border shrink-0">
+                <AvatarImage src={avatarUrl ?? undefined} alt="Your profile photo" />
+                <AvatarFallback className="font-semibold">
+                  {(application.full_name || "V").slice(0, 1).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Bio</p>
+                <p className="text-sm">
+                  {profile?.bio?.trim() || (
+                    <span className="text-muted-foreground italic">No bio added yet.</span>
+                  )}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Skills</p>
+                  <p className="text-sm font-medium">
+                    {profile?.skills?.trim() || <span className="text-muted-foreground">—</span>}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Based in</p>
+                  <p className="text-sm font-medium">
+                    {[profile?.city, profile?.state].filter(Boolean).join(", ") || "—"}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Availability</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full bg-primary/10 text-primary">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {HOURS_LABELS[profile?.availability_hours ?? "flexible"] ?? "Flexible"}
+                  </Badge>
+                  {(profile?.availability_days?.length ?? 0) > 0 ? (
+                    profile!.availability_days.map((d) => (
+                      <Badge key={d} variant="secondary" className="rounded-full">
+                        {d.slice(0, 3)}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm text-muted-foreground">No days selected yet</span>
+                  )}
+                </div>
+              </div>
+
+              <Button asChild variant="outline" size="sm" className="rounded-2xl">
+                <Link to="/volunteer/profile">
+                  <UserCog className="w-4 h-4 mr-2" /> Update profile
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {application ? (
           <Card className="rounded-3xl border-border">
             <CardHeader className="flex flex-row items-start justify-between gap-4">
