@@ -82,6 +82,10 @@ export default function VolunteerProfile() {
       setStatus((appRes.data as any)?.status ?? null);
       setFullName((appRes.data as any)?.full_name ?? "");
 
+      const storedPath = (profRes.data as any)?.avatar_url ?? null;
+      setAvatarPath(storedPath);
+      setAvatarPreview(storedPath ? await signedUrl(storedPath) : null);
+
       const prof = profRes.data as any;
       setForm({
         bio: prof?.bio ?? "",
