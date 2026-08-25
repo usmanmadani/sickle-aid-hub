@@ -23,6 +23,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import UserDashboard from "./pages/Dashboard";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
+import VolunteerProfile from "./pages/VolunteerProfile";
 import BlogPosts from "./pages/admin/BlogPosts";
 import AdminPrograms from "./pages/admin/Programs";
 import AdminDonations from "./pages/admin/Donations";
