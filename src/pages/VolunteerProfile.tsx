@@ -76,6 +76,7 @@ export default function VolunteerProfile() {
   const [cropOpen, setCropOpen] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
   const [form, setForm] = useState({
     bio: "",
     state: "",
@@ -84,10 +85,21 @@ export default function VolunteerProfile() {
     availability_hours: "flexible",
     skills: "",
   });
+  const savedRef = useRef(form);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
   }, [user, loading, navigate]);
+
+  const loadHistory = async (userId: string) => {
+    const { data } = await supabase
+      .from("volunteer_profile_history")
+      .select("id,section,detail,created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(12);
+    setHistory((data as HistoryRow[]) ?? []);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -105,6 +117,7 @@ export default function VolunteerProfile() {
           .select("*")
           .eq("user_id", user.id)
           .maybeSingle(),
+        loadHistory(user.id),
       ]);
 
       setStatus((appRes.data as any)?.status ?? null);
@@ -115,14 +128,16 @@ export default function VolunteerProfile() {
       setAvatarPreview(storedPath ? await signedUrl(storedPath) : null);
 
       const prof = profRes.data as any;
-      setForm({
+      const loaded = {
         bio: prof?.bio ?? "",
         state: prof?.state ?? (appRes.data as any)?.state ?? "",
         city: prof?.city ?? "",
-        availability_days: prof?.availability_days ?? [],
+        availability_days: (prof?.availability_days ?? []) as string[],
         availability_hours: prof?.availability_hours ?? "flexible",
         skills: prof?.skills ?? "",
-      });
+      };
+      setForm(loaded);
+      savedRef.current = loaded;
       setFetching(false);
     };
     load();
