@@ -68,6 +68,8 @@ export default function VolunteerDashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [application, setApplication] = useState<Application | null>(null);
+  const [profile, setProfile] = useState<VolunteerProfileRow | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [fetching, setFetching] = useState(true);
 
@@ -77,14 +79,20 @@ export default function VolunteerDashboard() {
 
   useEffect(() => {
     if (!user) return;
+
     const load = async () => {
-      const [appRes, evRes] = await Promise.all([
+      const [appRes, profRes, evRes] = await Promise.all([
         supabase
           .from("volunteer_applications")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("volunteer_profiles")
+          .select("*")
+          .eq("user_id", user.id)
           .maybeSingle(),
         supabase
           .from("events")
@@ -94,10 +102,37 @@ export default function VolunteerDashboard() {
           .limit(8),
       ]);
       setApplication((appRes.data as Application) ?? null);
+      const prof = (profRes.data as VolunteerProfileRow) ?? null;
+      setProfile(prof);
+      setAvatarUrl(await signedUrl(prof?.avatar_url ?? null));
       setEvents((evRes.data as EventRow[]) ?? []);
       setFetching(false);
     };
     load();
+
+    // Keep the summary fresh: reload whenever the profile row changes or the
+    // user comes back to this tab after saving their profile.
+    const channel = supabase
+      .channel("volunteer-profile-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "volunteer_profiles",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => load()
+      )
+      .subscribe();
+
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [user]);
 
   if (loading || !user || fetching) {
