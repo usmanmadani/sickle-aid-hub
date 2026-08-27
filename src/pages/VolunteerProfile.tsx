@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import AvatarCropDialog from "@/components/AvatarCropDialog";
 import {
   Loader2,
@@ -26,12 +27,22 @@ import {
   ShieldAlert,
   Camera,
   Trash2,
+  CheckCircle2,
+  CircleDashed,
+  History,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { NIGERIAN_STATES } from "@/lib/nigeria";
 import { signedUrl } from "@/lib/volunteerAvatar";
+import {
+  profileCompleteness,
+  logProfileChanges,
+  SECTION_LABELS,
+  type HistoryRow,
+  type SectionKey,
+} from "@/lib/volunteerProfile";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
