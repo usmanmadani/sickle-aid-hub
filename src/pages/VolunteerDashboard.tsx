@@ -41,6 +41,25 @@ type EventRow = {
   category: string | null;
 };
 
+type VolunteerProfileRow = {
+  bio: string;
+  state: string | null;
+  city: string | null;
+  availability_days: string[];
+  availability_hours: string;
+  skills: string;
+  avatar_url: string | null;
+  updated_at: string;
+};
+
+const HOURS_LABELS: Record<string, string> = {
+  flexible: "Flexible / anytime",
+  mornings: "Mornings (8am - 12pm)",
+  afternoons: "Afternoons (12pm - 5pm)",
+  evenings: "Evenings (5pm - 9pm)",
+  weekends: "Weekends only",
+};
+
 const statusMeta: Record<string, { label: string; icon: any; className: string; message: string }> = {
   pending: {
     label: "Pending Review",
