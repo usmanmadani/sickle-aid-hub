@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signedUrl } from "@/lib/volunteerAvatar";
 
 type Application = {
   id: string;
