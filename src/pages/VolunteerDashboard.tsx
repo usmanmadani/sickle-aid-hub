@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signedUrl } from "@/lib/volunteerAvatar";
 
 type Application = {
   id: string;
@@ -39,6 +41,25 @@ type EventRow = {
   location: string | null;
   starts_at: string;
   category: string | null;
+};
+
+type VolunteerProfileRow = {
+  bio: string;
+  state: string | null;
+  city: string | null;
+  availability_days: string[];
+  availability_hours: string;
+  skills: string;
+  avatar_url: string | null;
+  updated_at: string;
+};
+
+const HOURS_LABELS: Record<string, string> = {
+  flexible: "Flexible / anytime",
+  mornings: "Mornings (8am - 12pm)",
+  afternoons: "Afternoons (12pm - 5pm)",
+  evenings: "Evenings (5pm - 9pm)",
+  weekends: "Weekends only",
 };
 
 const statusMeta: Record<string, { label: string; icon: any; className: string; message: string }> = {
@@ -68,6 +89,8 @@ export default function VolunteerDashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [application, setApplication] = useState<Application | null>(null);
+  const [profile, setProfile] = useState<VolunteerProfileRow | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [fetching, setFetching] = useState(true);
 
@@ -77,14 +100,20 @@ export default function VolunteerDashboard() {
 
   useEffect(() => {
     if (!user) return;
+
     const load = async () => {
-      const [appRes, evRes] = await Promise.all([
+      const [appRes, profRes, evRes] = await Promise.all([
         supabase
           .from("volunteer_applications")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("volunteer_profiles")
+          .select("*")
+          .eq("user_id", user.id)
           .maybeSingle(),
         supabase
           .from("events")
@@ -94,10 +123,37 @@ export default function VolunteerDashboard() {
           .limit(8),
       ]);
       setApplication((appRes.data as Application) ?? null);
+      const prof = (profRes.data as VolunteerProfileRow) ?? null;
+      setProfile(prof);
+      setAvatarUrl(await signedUrl(prof?.avatar_url ?? null));
       setEvents((evRes.data as EventRow[]) ?? []);
       setFetching(false);
     };
     load();
+
+    // Keep the summary fresh: reload whenever the profile row changes or the
+    // user comes back to this tab after saving their profile.
+    const channel = supabase
+      .channel("volunteer-profile-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "volunteer_profiles",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => load()
+      )
+      .subscribe();
+
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [user]);
 
   if (loading || !user || fetching) {
