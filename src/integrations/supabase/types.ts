@@ -494,6 +494,30 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_profile_history: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          section: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          section: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          section?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       volunteer_profiles: {
         Row: {
           availability_days: string[]

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import AvatarCropDialog from "@/components/AvatarCropDialog";
 import {
   Loader2,
@@ -26,12 +27,22 @@ import {
   ShieldAlert,
   Camera,
   Trash2,
+  CheckCircle2,
+  CircleDashed,
+  History,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { NIGERIAN_STATES } from "@/lib/nigeria";
 import { signedUrl } from "@/lib/volunteerAvatar";
+import {
+  profileCompleteness,
+  logProfileChanges,
+  SECTION_LABELS,
+  type HistoryRow,
+  type SectionKey,
+} from "@/lib/volunteerProfile";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -65,6 +76,7 @@ export default function VolunteerProfile() {
   const [cropOpen, setCropOpen] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
   const [form, setForm] = useState({
     bio: "",
     state: "",
@@ -73,10 +85,21 @@ export default function VolunteerProfile() {
     availability_hours: "flexible",
     skills: "",
   });
+  const savedRef = useRef(form);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
   }, [user, loading, navigate]);
+
+  const loadHistory = async (userId: string) => {
+    const { data } = await supabase
+      .from("volunteer_profile_history")
+      .select("id,section,detail,created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(12);
+    setHistory((data as HistoryRow[]) ?? []);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -94,6 +117,7 @@ export default function VolunteerProfile() {
           .select("*")
           .eq("user_id", user.id)
           .maybeSingle(),
+        loadHistory(user.id),
       ]);
 
       setStatus((appRes.data as any)?.status ?? null);
@@ -104,14 +128,16 @@ export default function VolunteerProfile() {
       setAvatarPreview(storedPath ? await signedUrl(storedPath) : null);
 
       const prof = profRes.data as any;
-      setForm({
+      const loaded = {
         bio: prof?.bio ?? "",
         state: prof?.state ?? (appRes.data as any)?.state ?? "",
         city: prof?.city ?? "",
-        availability_days: prof?.availability_days ?? [],
+        availability_days: (prof?.availability_days ?? []) as string[],
         availability_hours: prof?.availability_hours ?? "flexible",
         skills: prof?.skills ?? "",
-      });
+      };
+      setForm(loaded);
+      savedRef.current = loaded;
       setFetching(false);
     };
     load();
@@ -179,6 +205,8 @@ export default function VolunteerProfile() {
     setUploading(false);
     setCropOpen(false);
     setRawImage(null);
+    await logProfileChanges(user.id, [{ section: "photo", detail: "Photo updated" }]);
+    await loadHistory(user.id);
     toast({ title: "Photo updated", description: "Your profile photo has been saved." });
   };
 
@@ -197,6 +225,8 @@ export default function VolunteerProfile() {
     setAvatarPath(null);
     setAvatarPreview(null);
     setUploading(false);
+    await logProfileChanges(user.id, [{ section: "photo", detail: "Photo removed" }]);
+    await loadHistory(user.id);
     toast({ title: "Photo removed" });
   };
 
@@ -231,8 +261,37 @@ export default function VolunteerProfile() {
       toast({ title: "Could not save profile", description: error.message, variant: "destructive" });
       return;
     }
+
+    // Log only the sections that actually changed since the last save.
+    const prev = savedRef.current;
+    const changes: { section: SectionKey; detail?: string | null }[] = [];
+    if (prev.bio !== form.bio) changes.push({ section: "bio", detail: "Bio updated" });
+    if (prev.skills !== form.skills) changes.push({ section: "skills", detail: "Skills updated" });
+    if (prev.state !== form.state || prev.city !== form.city)
+      changes.push({
+        section: "location",
+        detail: [form.city, form.state].filter(Boolean).join(", ") || "Location cleared",
+      });
+    if (
+      prev.availability_hours !== form.availability_hours ||
+      prev.availability_days.join(",") !== form.availability_days.join(",")
+    )
+      changes.push({
+        section: "availability",
+        detail: form.availability_days.length
+          ? `${form.availability_days.length} day(s) selected`
+          : "No days selected",
+      });
+
+    savedRef.current = { ...form, availability_days: [...form.availability_days] };
+    if (changes.length) {
+      await logProfileChanges(user.id, changes);
+      await loadHistory(user.id);
+    }
     toast({ title: "Profile updated", description: "Your volunteer profile has been saved." });
   };
+
+  const completeness = profileCompleteness({ ...form, avatar_url: avatarPath });
 
   if (loading || !user || fetching) {
     return (
