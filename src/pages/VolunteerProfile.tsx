@@ -205,6 +205,8 @@ export default function VolunteerProfile() {
     setUploading(false);
     setCropOpen(false);
     setRawImage(null);
+    await logProfileChanges(user.id, [{ section: "photo", detail: "Photo updated" }]);
+    await loadHistory(user.id);
     toast({ title: "Photo updated", description: "Your profile photo has been saved." });
   };
 
@@ -223,6 +225,8 @@ export default function VolunteerProfile() {
     setAvatarPath(null);
     setAvatarPreview(null);
     setUploading(false);
+    await logProfileChanges(user.id, [{ section: "photo", detail: "Photo removed" }]);
+    await loadHistory(user.id);
     toast({ title: "Photo removed" });
   };
 
@@ -257,8 +261,37 @@ export default function VolunteerProfile() {
       toast({ title: "Could not save profile", description: error.message, variant: "destructive" });
       return;
     }
+
+    // Log only the sections that actually changed since the last save.
+    const prev = savedRef.current;
+    const changes: { section: SectionKey; detail?: string | null }[] = [];
+    if (prev.bio !== form.bio) changes.push({ section: "bio", detail: "Bio updated" });
+    if (prev.skills !== form.skills) changes.push({ section: "skills", detail: "Skills updated" });
+    if (prev.state !== form.state || prev.city !== form.city)
+      changes.push({
+        section: "location",
+        detail: [form.city, form.state].filter(Boolean).join(", ") || "Location cleared",
+      });
+    if (
+      prev.availability_hours !== form.availability_hours ||
+      prev.availability_days.join(",") !== form.availability_days.join(",")
+    )
+      changes.push({
+        section: "availability",
+        detail: form.availability_days.length
+          ? `${form.availability_days.length} day(s) selected`
+          : "No days selected",
+      });
+
+    savedRef.current = { ...form, availability_days: [...form.availability_days] };
+    if (changes.length) {
+      await logProfileChanges(user.id, changes);
+      await loadHistory(user.id);
+    }
     toast({ title: "Profile updated", description: "Your volunteer profile has been saved." });
   };
+
+  const completeness = profileCompleteness({ ...form, avatar_url: avatarPath });
 
   if (loading || !user || fetching) {
     return (
