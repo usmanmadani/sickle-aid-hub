@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signedUrl } from "@/lib/volunteerAvatar";
+import { profileCompleteness } from "@/lib/volunteerProfile";
 
 type Application = {
   id: string;
@@ -167,6 +168,7 @@ export default function VolunteerDashboard() {
 
   const meta = statusMeta[application?.status ?? "pending"];
   const StatusIcon = meta.icon;
+  const completeness = profileCompleteness(profile);
 
   return (
     <div className="min-h-screen pt-24 pb-20 bg-background">
@@ -215,6 +217,38 @@ export default function VolunteerDashboard() {
               </Avatar>
             </CardHeader>
             <CardContent className="space-y-5">
+              <div className="rounded-2xl bg-secondary/40 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-semibold">Profile completeness</p>
+                    <p className="text-xs text-muted-foreground">
+                      {completeness.percent === 100
+                        ? "Your profile is ready for coordinators."
+                        : `${completeness.missing.length} section${completeness.missing.length === 1 ? "" : "s"} left to complete`}
+                    </p>
+                  </div>
+                  <span className="text-lg font-bold text-primary">{completeness.percent}%</span>
+                </div>
+                <div
+                  className="h-2 w-full overflow-hidden rounded-full bg-background"
+                  role="progressbar"
+                  aria-label="Profile completeness"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={completeness.percent}
+                >
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${completeness.percent}%` }}
+                  />
+                </div>
+                {completeness.missing.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Next up: {completeness.missing.slice(0, 2).map((section) => section.label).join(" and ")}.
+                  </p>
+                )}
+              </div>
+
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Bio</p>
                 <p className="text-sm">
@@ -246,8 +280,8 @@ export default function VolunteerDashboard() {
                     <Clock className="w-3 h-3 mr-1" />
                     {HOURS_LABELS[profile?.availability_hours ?? "flexible"] ?? "Flexible"}
                   </Badge>
-                  {(profile?.availability_days?.length ?? 0) > 0 ? (
-                    profile!.availability_days.map((d) => (
+                   {(profile?.availability_days?.length ?? 0) > 0 ? (
+                    profile.availability_days.map((d) => (
                       <Badge key={d} variant="secondary" className="rounded-full">
                         {d.slice(0, 3)}
                       </Badge>
