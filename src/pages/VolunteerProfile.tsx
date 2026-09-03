@@ -351,6 +351,49 @@ export default function VolunteerProfile() {
 
         <Card className="rounded-3xl border-border">
           <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl">Profile completeness</CardTitle>
+                <CardDescription>
+                  {completeness.percent === 100
+                    ? "Your profile is complete and ready for coordinators."
+                    : "Finish the highlighted sections so coordinators can match you with the right outreach work."}
+                </CardDescription>
+              </div>
+              <span className="text-2xl font-extrabold text-primary">{completeness.percent}%</span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Progress value={completeness.percent} className="h-2" aria-label="Profile completeness" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {completeness.sections.map((section) => {
+                const Icon = section.done ? CheckCircle2 : CircleDashed;
+                return (
+                  <div
+                    key={section.key}
+                    className="flex items-start gap-2 rounded-2xl border border-border px-3 py-2 text-sm"
+                  >
+                    <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${section.done ? "text-primary" : "text-muted-foreground"}`} />
+                    <div>
+                      <p className={section.done ? "font-medium" : "font-medium text-muted-foreground"}>
+                        {section.label}
+                      </p>
+                      {!section.done && <p className="text-xs text-muted-foreground">{section.hint}</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {completeness.missing.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                Start with {completeness.missing[0]?.label.toLowerCase()} to move your profile forward.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card id="photo" className="rounded-3xl border-border">
+          <CardHeader>
             <CardTitle className="text-xl">Profile photo</CardTitle>
             <CardDescription>
               Upload a clear headshot — you can crop and zoom before saving.
@@ -412,7 +455,7 @@ export default function VolunteerProfile() {
           onCropped={handleCropped}
         />
 
-        <Card className="rounded-3xl border-border">
+        <Card id="bio" className="rounded-3xl border-border">
           <CardHeader>
             <CardTitle className="text-xl">About you</CardTitle>
             <CardDescription>
@@ -446,7 +489,7 @@ export default function VolunteerProfile() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border">
+        <Card id="location" className="rounded-3xl border-border">
           <CardHeader>
             <CardTitle className="text-xl">Location</CardTitle>
             <CardDescription>Where you can support outreach on the ground.</CardDescription>
@@ -483,7 +526,7 @@ export default function VolunteerProfile() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border">
+        <Card id="availability" className="rounded-3xl border-border">
           <CardHeader>
             <CardTitle className="text-xl">Availability</CardTitle>
             <CardDescription>Pick the days and time window that work best for you.</CardDescription>
@@ -537,7 +580,35 @@ export default function VolunteerProfile() {
           </CardContent>
         </Card>
 
-        <Button onClick={handleSave} disabled={saving} className="rounded-2xl w-full sm:w-auto">
+        <Card className="rounded-3xl border-border">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <History className="h-5 w-5 text-primary" /> Edit history
+            </CardTitle>
+            <CardDescription>See the latest updates to each part of your profile.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {history.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Your profile updates will appear here.</p>
+            ) : (
+              <div className="space-y-3">
+                {history.map((entry) => (
+                  <div key={entry.id} className="flex items-start justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0">
+                    <div>
+                      <p className="text-sm font-semibold">{SECTION_LABELS[entry.section] ?? entry.section}</p>
+                      <p className="text-xs text-muted-foreground">{entry.detail ?? "Profile updated"}</p>
+                    </div>
+                    <time className="shrink-0 text-right text-xs text-muted-foreground" dateTime={entry.created_at}>
+                      {new Date(entry.created_at).toLocaleString()}
+                    </time>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Button id="save" onClick={handleSave} disabled={saving} className="rounded-2xl w-full sm:w-auto">
           {saving ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
